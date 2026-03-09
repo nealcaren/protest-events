@@ -55,7 +55,11 @@
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            cursor: pointer;
+            user-select: none;
         }
+        th:hover { background: #007a66; }
+        th .sort-arrow { font-size: 0.6rem; margin-left: 4px; }
         td {
             padding: 10px 14px;
             border-bottom: 1px solid #eee;
@@ -125,23 +129,23 @@
         <div class="filters">
             <select id="type-filter">
                 <option value="">All types</option>
-                <option value="boycott">boycott</option><option value="campaign|rally">campaign|rally</option><option value="convention">convention</option><option value="delegation">delegation</option><option value="demonstration">demonstration</option><option value="march">march</option><option value="mass_meeting">mass_meeting</option><option value="mass_meeting|delegation">mass_meeting|delegation</option><option value="mass_meeting|demonstration">mass_meeting|demonstration</option><option value="mass_meeting|petition">mass_meeting|petition</option><option value="meeting">meeting</option><option value="other">other</option><option value="parade">parade</option><option value="petition">petition</option><option value="protest">protest</option><option value="rally">rally</option><option value="strike">strike</option>
+                <option value="boycott">boycott</option><option value="campaign|rally">campaign|rally</option><option value="convention">convention</option><option value="delegation">delegation</option><option value="demonstration">demonstration</option><option value="legal_challenge">legal_challenge</option><option value="march">march</option><option value="mass_meeting">mass_meeting</option><option value="mass_meeting|delegation">mass_meeting|delegation</option><option value="mass_meeting|demonstration">mass_meeting|demonstration</option><option value="mass_meeting|petition">mass_meeting|petition</option><option value="meeting">meeting</option><option value="other">other</option><option value="parade">parade</option><option value="petition">petition</option><option value="protest">protest</option><option value="rally">rally</option><option value="strike">strike</option>
             </select>
             <select id="paper-filter">
                 <option value="">All papers</option>
                 <option value="cleveland-gazette">Cleveland Gazette</option><option value="colorado-statesman">Colorado Statesman</option><option value="dallas-express">Dallas Express</option><option value="denver-star">Denver Star</option><option value="houston-informer">Houston Informer</option>
             </select>
             <input type="text" id="text-search" placeholder="Search descriptions...">
-            <span class="count" id="count">1028 events</span>
+            <span class="count" id="count">1073 events</span>
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Type</th>
+                    <th data-col="date" onclick="sortTable('date')">Date <span class="sort-arrow">▲</span></th>
+                    <th data-col="type" onclick="sortTable('type')">Type <span class="sort-arrow"></span></th>
                     <th>Event</th>
-                    <th>Source</th>
+                    <th data-col="paper" onclick="sortTable('paper')">Source <span class="sort-arrow"></span></th>
                 </tr>
             </thead>
             <tbody id="events-body">
@@ -19356,6 +19360,55 @@ Bishop Flipper, in his opening address, declared that the white ma</div>
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-07-21</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">A meeting of white citizens of Tuskegee with General Hines of the Veterans&#x27; Bureau to protest against Negro personnel at a Veterans&#x27; Bureau facility.</div>
+                <div class="event-meta">
+                    <span>Location: Tuskegee, Alabama</span>
+                    <span>Participants: White citizens of Tuskegee, State Senator R. H. Powell, General Hines (Veterans&#x27; Bureau director), President Harding (referenced)</span>
+                    <span>Event date: July 5, 1923</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Tuskegee, Ala.—The meeting of the white citizens of Tuskegee with General Hines of the Veterans&#x27; Bureau, which was held here Thursday afternoon, July 5, was characterized by bitterness and the stronge</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-07-21&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="demonstration" data-paper="houston-informer">
+            <td class="date-col">1923-07-21</td>
+            <td><span class="event-badge">demonstration</span></td>
+            <td>
+                <div class="event-desc">A protest meeting being held regarding opposition to a new hospital for Negro in Tuskegee, with various groups expressing grievances about the institution.</div>
+                <div class="event-meta">
+                    <span>Location: Tuskegee</span>
+                    <span>Participants: Various groups including those opposed to the Tuskegee Institute hospital project</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">he&#x27;s plight in the face of the un-
+functioning of the United States
+has transcended all other topics
+regard to political faith, have
+bringing the insistence of the small
+as who boldly &quot;threaten the Un</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-07-21&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="petition" data-paper="colorado-statesman">
             <td class="date-col">1923-07-28</td>
             <td><span class="event-badge">petition</span></td>
@@ -19514,6 +19567,28 @@ WOMAN ON COMMITTEE</div>
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1923-07-28&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1923-07-28</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">Veterans submitted a petition regarding hikes, likely in response to grievances about pay or benefits.</div>
+                <div class="event-meta">
+                    <span>Location: Houston</span>
+                    <span>Participants: Veterans</span>
+                    <span>Event date: 1923-07-28</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Veterans Petition Hikes</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-07-28&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -19852,6 +19927,50 @@ Paris, Aug. 31.—Because feelings of French Negroes have been outraged by the b
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-09-15</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">A delegation waited on Senator Underwood to protest regarding a hospital matter affecting colored soldiers and to demand his support.</div>
+                <div class="event-meta">
+                    <span>Location: State legislature</span>
+                    <span>Participants: Delegation including R.R. Moton and supporters advocating for colored soldiers&#x27; hospital care</span>
+                    <span>Event date: July (year not specified, but article from 1923)</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">It seemed inconceivable that out of the simple matter of caring for colored soldiers should arise. But the Southerners should argue. But the Southerners should fight. The difficult thing for him to co</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-09-15&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="mass_meeting" data-paper="houston-informer">
+            <td class="date-col">1923-09-15</td>
+            <td><span class="event-badge">mass_meeting</span></td>
+            <td>
+                <div class="event-desc">The NAACP&#x27;s 14th Annual Conference adopted a unanimous message to the nation calling for the elimination of mob violence, opposing racial inferiority doctrines, and supporting the Dyer Anti-Lynching Bill while memorializing President Coolidge and Congress.</div>
+                <div class="event-meta">
+                    <span>Location: Kansas City</span>
+                    <span>Participants: National Association for the Advancement of Colored People (NAACP) conference delegates</span>
+                    <span>Event date: 1923 (14th annual conference)</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">National Association for the Advancement of Colored People, at 14th Annual Conference, Calls Upon Nation to Blot Out Mob Violence—Racial Inferiority Doctrine &quot;Treason&quot; Urge Political Emancipation of C</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-09-15&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="delegation" data-paper="colorado-statesman">
             <td class="date-col">1923-09-22</td>
             <td><span class="event-badge">delegation</span></td>
@@ -19962,6 +20081,55 @@ Paris, Aug. 31.—Because feelings of French Negroes have been outraged by the b
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-10-06</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">A committee from the Negro National Educational Congress presented a memorial to President Coolidge at the White House demanding that he use his office to secure constitutional rights for African Americans.</div>
+                <div class="event-meta">
+                    <span>Location: Washington, D.C.</span>
+                    <span>Participants: Committee of nine women representatives from various states, J. Silan Harris (president of the congress), and Henry E. Hagans (executive committee member)</span>
+                    <span>Event date: 1923-10-06</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Representatives of Negro National Educational Congress Memorialized Coolidge to Use His High Office to Secure, for All Americans, Their Constitutional Rights.
+
+(By Asociated Negro Press.)
+Washington, </div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-10-06&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-10-06</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">Colored women presented pleas to the nation&#x27;s head (president), constituting a delegation action to deliver grievances to a government official.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: Colored women</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">COLORED WOMEN
+PRESENT, PLEAS
+TO NATION HEAD</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-10-06&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="other" data-paper="colorado-statesman">
             <td class="date-col">1923-10-13</td>
             <td><span class="event-badge">other</span></td>
@@ -19980,6 +20148,28 @@ Paris, Aug. 31.—Because feelings of French Negroes have been outraged by the b
             <td>
                 <a href="https://dangerouspress.org/?paper=colorado-statesman&date=1923-10-13&page=1" target="_blank" class="source-link">
                     Colorado Statesman<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-10-13</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">A delegation of colored citizens presented their case to the Republican Party convention requesting the nomination of a colored candidate for the judicial bench.</div>
+                <div class="event-meta">
+                    <span>Location: Chicago, Illinois</span>
+                    <span>Participants: Edward H. Wright, Alderman Louis B. Anderson, Attorney Violet Anderson, A. E. Patterson, I. B. Turner, O. D. Priest, and a committee of colored citizens</span>
+                    <span>Event date: Fall 1923</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Chicago, Ill.—When the republican and democratic parties decided to throw full tickets into the judicial election this fall it opened the way for the nomination of a colored candidate to sit upon the </div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-10-13&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -20118,6 +20308,50 @@ The bishop was eloquent in his appeal to the four hundred ministers of Kentucky 
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-11-03</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">Editors from six Southern states came together to plead for fair treatment of African Americans.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: Newspaper editors from six Southern states</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">EDITORS OF SIX SOUTHERN STATES PLEAD FOR SQUARE DEAL FOR RACE</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-11-03&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="demonstration" data-paper="houston-informer">
+            <td class="date-col">1923-11-03</td>
+            <td><span class="event-badge">demonstration</span></td>
+            <td>
+                <div class="event-desc">Students attempted to leave a college institution while guards physically blocked their departure at the station, with at least one guard firing a weapon.</div>
+                <div class="event-meta">
+                    <span>Location: College station (likely Texas A&amp;M or similar institution)</span>
+                    <span>Participants: College students and guards/guardians of the institution</span>
+                    <span>Event date: Friday (specific date not provided, article dated 1923-11-03)</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Agricultural and Mechanical Collar holds the hopes of the colp for a period of thirty or more the disruption is the blinders of the college, and the higher education of Negroes in f. College is the on</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-11-03&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="petition" data-paper="colorado-statesman">
             <td class="date-col">1923-11-10</td>
             <td><span class="event-badge">petition</span></td>
@@ -20202,6 +20436,61 @@ The bishop was eloquent in his appeal to the four hundred ministers of Kentucky 
             <td>
                 <a href="https://dangerouspress.org/?paper=colorado-statesman&date=1923-11-10&page=1" target="_blank" class="source-link">
                     Colorado Statesman<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-11-17</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">The NAACP submitted a communication to the Federal Department of Justice regarding peonage conditions in Georgia, based on an account from an escaped Negro.</div>
+                <div class="event-meta">
+                    <span>Location: New York City</span>
+                    <span>Participants: National Association for the Advancement of Colored People (NAACP)</span>
+                    <span>Event date: 1923-11-17</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">New York City.—The National Association for the Advancement of Colored People, 69 Fifth Avenue, is taking up with the Federal Department of Justice a communication from a Negro escaped from the state </div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-11-17&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1923-11-17</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">The Association for the Advancement of Colored People is taking up the matter of peonage conditions with the Federal government through a communication from an escaped Negro describing exploitative labor practices.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: Association for the Advancement of Colored People, Negro escaped from peonage conditions</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">AGUE
+YOUTH
+
+IT DISCLOSES
+DLORED EXODUS;
+CONDITIONS OBTAIN
+
+Association for the Advancement
+ue, is taking up with the Federal
+munication from a Negro escaped
+ing of peonage conditions there.
+as to why </div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1923-11-17&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -20580,6 +20869,28 @@ New York City, Feb. 23.—Why should the salary of the Negro teacher be less tha
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1924-03-15</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">Teachers in Jersey demanded equal pay with white teachers, expressing grievance over discriminatory wage practices.</div>
+                <div class="event-meta">
+                    <span>Location: Jersey</span>
+                    <span>Participants: Teachers</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">JERSEY TEACHERS DEMAND SAME PAY AS WHITE TUTORS</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1924-03-15&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="delegation" data-paper="colorado-statesman">
             <td class="date-col">1924-04-12</td>
             <td><span class="event-badge">delegation</span></td>
@@ -20642,6 +20953,61 @@ New York City, Feb. 23.—Why should the salary of the Negro teacher be less tha
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1924-04-12&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1924-04-12</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">Colored men appeared before the Minnesota legislature with a prepared plea for justice, with Dr. S. D. Brown reading the address on behalf of racial people.</div>
+                <div class="event-meta">
+                    <span>Location: Minnesota legislature</span>
+                    <span>Participants: Dr. S. D. Brown and colored men representing racial leaders and spokesmen</span>
+                    <span>Event date: January 24</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">(By the Associated Negro Press)
+
+Washington, D. C.—A short time ago the governor of Minnesota, who plea for larger justice for the racial people of his state. This was followed by colored men appearin</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1924-04-12&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1924-04-19</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">Colored residents of Houston petitioned the city council to gravel streets in colored residential sections and permanently pave Dowling street.</div>
+                <div class="event-meta">
+                    <span>Location: Houston, Texas</span>
+                    <span>Participants: Colored residents of Houston, General Joseph F. Wolters (chairman of local committee)</span>
+                    <span>Event date: 1924-04-19</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">VOL. V.
+
+NOR
+
+THE MIRROR
+
+BY C. F. RICHARD80M.
+
+WILL THE COUNCIL ACT?
+The city council has been petitioned by a rising number of colored Houston to gravel several streets in the colored residential se</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1924-04-19&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -21390,6 +21756,96 @@ AROUSED. SECURE INVESTIGATION AND STATEMENT FROM OFFICIALS</div>
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="other" data-paper="houston-informer">
+            <td class="date-col">1925-07-04</td>
+            <td><span class="event-badge">other</span></td>
+            <td>
+                <div class="event-desc">Churches planning organized action against lynching</div>
+                <div class="event-meta">
+                    <span>Location: Houston</span>
+                    <span>Participants: Churches</span>
+                    <span>Event date: 1925-07-04</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">CHURCHES PLAN
+FIGHT AGAINST
+LYNCHING EVIL</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-07-04&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1925-07-04</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">A committee of prominent Negro citizens from the newly formed Citizens&#x27; Welfare Council met with the mayor of New York City to demand that Harlem Hospital open its doors to Negro physicians and internes.</div>
+                <div class="event-meta">
+                    <span>Location: New York City (Harlem)</span>
+                    <span>Participants: Committee of prominent Negro citizens representing the Citizens&#x27; Welfare Council, Harlem Medical Board, mayor of New York City</span>
+                    <span>Event date: A few weeks before July 4, 1925</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">New York.—On Tuesday Harlem Hospital opened its doors to Negro physicians and internes. This action was taken at a conference between the Harlem Medical Board and a committee of prominent Negro citize</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-07-04&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="other" data-paper="houston-informer">
+            <td class="date-col">1925-08-01</td>
+            <td><span class="event-badge">other</span></td>
+            <td>
+                <div class="event-desc">A statement of commitment to fighting residential segregation and attacking disfranchisement in the South through legal and political action regarding voting rights.</div>
+                <div class="event-meta">
+                    <span>Location: United States</span>
+                    <span>Participants: Unspecified group engaged in civil rights activism</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">We are fighting residential segregation in the United States. We are attacking disfranchisement in the South by bringing the white-primary vote to the ballot.</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-08-01&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1925-08-01</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">A formal resolution expressing disgust at attempts to discredit the Ninety-Second Division (Colored) of the U.S. Army and condemning the actions of military and Southern officials toward these servicemen.</div>
+                <div class="event-meta">
+                    <span>Location: Houston</span>
+                    <span>Participants: Members of the Houston African American community drafting resolutions in support of the Ninety-Second Division</span>
+                    <span>Event date: 1925-08-01</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Resolved, That we note with disgust and disgust the attempt of the militant group to banish, and the United States Army to defame and discredit the men of the Ninety-Second Division (Colored) of the A</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-08-01&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="other" data-paper="dallas-express">
             <td class="date-col">1925-08-22</td>
             <td><span class="event-badge">other</span></td>
@@ -21528,6 +21984,78 @@ trauma Center, 1200 Broadway</div>
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="other" data-paper="houston-informer">
+            <td class="date-col">1925-11-21</td>
+            <td><span class="event-badge">other</span></td>
+            <td>
+                <div class="event-desc">Women in Mississippi organizing against lynching</div>
+                <div class="event-meta">
+                    <span>Location: Mississippi</span>
+                    <span>Participants: Women</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">ANTI-LYNCHING
+STANDBY WOMEN
+OF MISSISSIPPI</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-11-21&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="mass_meeting" data-paper="houston-informer">
+            <td class="date-col">1925-11-21</td>
+            <td><span class="event-badge">mass_meeting</span></td>
+            <td>
+                <div class="event-desc">Mississippi women leaders launched a determined campaign against lynching and mob violence, adopting an anti-lynching resolution at a meeting organized by the Mississippi Inter-racial Committee.</div>
+                <div class="event-meta">
+                    <span>Location: Jackson, Mississippi</span>
+                    <span>Participants: Representative Mississippi women, leaders in religious and civic groups, Mississippi Inter-racial Committee</span>
+                    <span>Event date: 1925-11-21</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Campaign to Be Pushed Throughout the State—Representative Groups Take Lead.
+Special to the Informer.
+Jackson, Miss.-Representative Mississippi women, leaders in many important religious and civic grou</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-11-21&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="other" data-paper="houston-informer">
+            <td class="date-col">1925-11-21</td>
+            <td><span class="event-badge">other</span></td>
+            <td>
+                <div class="event-desc">Women in Mississippi organized to stand against lynching</div>
+                <div class="event-meta">
+                    <span>Location: Mississippi</span>
+                    <span>Participants: Women of Mississippi</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">ANTI-LYNCHING
+STANDBY WOMEN
+OF MISSISSIPPI</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-11-21&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="other" data-paper="dallas-express">
             <td class="date-col">1925-11-28</td>
             <td><span class="event-badge">other</span></td>
@@ -21561,6 +22089,39 @@ taught, the</div>
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1925-11-28&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="mass_meeting" data-paper="houston-informer">
+            <td class="date-col">1925-11-28</td>
+            <td><span class="event-badge">mass_meeting</span></td>
+            <td>
+                <div class="event-desc">A large convention assembled to support civil rights and the right of African Americans to live where they choose, in response to a shooting incident at the Sweet home.</div>
+                <div class="event-meta">
+                    <span>Location: Nine Oaks (referenced); appears to be related to a trial in a Northern city</span>
+                    <span>Participants: Representatives of civil rights organizations, women&#x27;s clubs, educational societies, and major African American newspapers (Pittsburgh Courier, Afro-American, Detroit papers)</span>
+                    <span>Event date: 1925-11-28 (publication date); shooting occurred Thursday morning</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Reports
+Mary Blaze
+Special Judge
+
+Sheriffs Fire Loss While on Trial
+And His Home Against Mob Asso-
+cated Conducted Case in Masterly
+It, So Goes Colored Americans.
+
+Red Negro Press.)
+
+souls, the repres</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1925-11-28&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -21605,6 +22166,31 @@ taught, the</div>
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1925-12-26&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="other" data-paper="houston-informer">
+            <td class="date-col">1926-01-09</td>
+            <td><span class="event-badge">other</span></td>
+            <td>
+                <div class="event-desc">Anti-Klan groups in Ohio, Maryland, and North Carolina successfully opposed granting a state charter to the Ku Klux Klan, and organized action against the showing of &#x27;Birth of a Nation&#x27; in West Virginia.</div>
+                <div class="event-meta">
+                    <span>Location: Ohio, Maryland, North Carolina, West Virginia</span>
+                    <span>Participants: Anti-Klan and anti-interdenominational groups, N.A.A.C.P.</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">7. Ku Klux Klan and Midecine-
+successfully opposed granting of a state charter to the klan. Anti-Inter-
+mentarian groups in Ohio and Maryland沿用 n. C. P. action. Showing of the &quot;Birth
+of the Nation&quot; in</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-01-09&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -21818,6 +22404,50 @@ Chicago, just a mile away, is being used to fight migration, Jim Crow and disfra
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1926-07-17</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">Citizens organizing to write in the name of Richardson, indicating a petition or campaign effort for a political candidate.</div>
+                <div class="event-meta">
+                    <span>Location: Houston</span>
+                    <span>Participants: Citizens</span>
+                    <span>Event date: 1926-07-17</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">CITIZENS WILL WRITE IN NAME OF RICHARDSON</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-07-17&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1926-07-17</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">Citizens planning to write in the name of Richardson as a political action.</div>
+                <div class="event-meta">
+                    <span>Location: Houston</span>
+                    <span>Participants: Citizens</span>
+                    <span>Event date: 1926-07-17</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">CITIZENS WILL WRITE IN NAME OF RICHARDSON</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-07-17&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="demonstration" data-paper="dallas-express">
             <td class="date-col">1926-08-28</td>
             <td><span class="event-badge">demonstration</span></td>
@@ -21859,6 +22489,94 @@ FIGHT ON SEGREGATION</div>
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1926-09-18&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1926-10-02</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">A telegram sent to President Calvin Coolidge protesting against the conscription of Negroes in the Army, arguing it violates constitutional rights.</div>
+                <div class="event-meta">
+                    <span>Location: Washington, D.C.</span>
+                    <span>Participants: Edward H. Wright (member of Illinois Commerce Commission) and fifteen million Negroes in America</span>
+                    <span>Event date: 1926-10-02</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">The following telegram, sent to President Coxon by Hon. Edward H. W. Coxon, a member of the Illinois Commerce Commission, is typical of the deluge of the Hon. Calvin Coolidge, President of the United </div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-10-02&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1926-10-02</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">Colored Americans petitioned President Coolidge to address discriminatory treatment they were receiving.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: Colored Americans</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Colored Americans Accorded Raw Deal; Coolidge Petitioned</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-10-02&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1926-10-02</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">Prominent African Americans and organizations including the NAACP and Associated Negro Press sent protesters/delegations to Wright to demand protection of Negro interests.</div>
+                <div class="event-meta">
+                    <span>Location: Not specified</span>
+                    <span>Participants: Prominent African Americans, National Association of Colored People (NAACP), Associated Negro Press</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">wounded. To curb further outbreaks the militia units was called out and the Army was sent to the safe-guard those forcing the concession. Wright Sends Protests. Individuals, including some of the most</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-10-02&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1926-10-02</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">A wave of indignation sweeping the Negro population in response to forced labor conscription of Black workers in Florida, resulting in hundreds of protests submitted to President Coolidge.</div>
+                <div class="event-meta">
+                    <span>Location: Chicago, IL; Florida</span>
+                    <span>Participants: Chicago&#x27;s Political Leader Ed H. Wright, Negro population across the country</span>
+                    <span>Event date: 1926-10-02</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">White Floridans Subject Blacks To Virtual Peonage, Forcing Latter To Work In Devastated Communities—Charge Sailors and Soldiers Invade Negro Districts, Armed With Rifles, and Force Blacks Into Trucks—</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-10-02&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -21935,6 +22653,108 @@ beach for Negroes in Washi</div>
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1926-11-20</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">The National Association of Lawyers urges officials to make a statement and take action regarding the alarming increase in lynchings across America.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: National Association of Lawyers, James Weldon Johnson (Secretary)</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">were wontly assassinated in revenge for the killing of a white man with whose death none of the murdered National Association of Lawyers&#x27; latest outrage increases the number of recorded American lynch</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-11-20&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1926-11-20</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">The NAACP telegraphed President Coolidge demanding federal action against lynching following the lynching of 3 Negroes in Houston, Texas.</div>
+                <div class="event-meta">
+                    <span>Location: Houston, Texas</span>
+                    <span>Participants: National Association for the Advancement of Colored People (NAACP)</span>
+                    <span>Event date: 1926-11-20</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">D
+RACE
+
+YNCHING
+TES TEXAS
+AND PLACE
+
+President Asking for Off-
+Federal Action Against
+Colored Women Recent
+Critics—South Carolina Yields
+to Texas—Florida Has Com-
+g Bees to Date as Against 18
+
+what th</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-11-20&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1926-11-20</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">The NAACP telegraphed President Coolidge demanding a federal statement and congressional action against lynching.</div>
+                <div class="event-meta">
+                    <span>Location: New York City</span>
+                    <span>Participants: National Association for the Advancement of Colored People (NAACP), James Weldon Johnson (Secretary)</span>
+                    <span>Event date: 1926-11-20</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Advancement Association Wires President Asking for Official Pronouncement and Federal Action Against Judge Lynch&#x27;s Circuit—Two Colored Women Recent Victims of Southern Mobsters—South Carolina Yields S</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-11-20&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="other" data-paper="houston-informer">
+            <td class="date-col">1926-12-04</td>
+            <td><span class="event-badge">other</span></td>
+            <td>
+                <div class="event-desc">A nationwide protest movement against lynching coordinated by the NAACP, including media coverage and advocacy for federal anti-lynching legislation.</div>
+                <div class="event-meta">
+                    <span>Location: National (centered in New York City)</span>
+                    <span>Participants: National Association for the Advancement of Colored People (NAACP), newspapers (New York World, New York Times), Americans believing in law and order</span>
+                    <span>Event date: 1926-12-04</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">National Association For the Advancement of Colored People Reports Protests Against Judge Lynch&#x27;s Loop From All Sections of America—Daily Papers of New York City Devoting Much Space To Expose of Natio</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-12-04&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="mass_meeting" data-paper="dallas-express">
             <td class="date-col">1926-12-18</td>
             <td><span class="event-badge">mass_meeting</span></td>
@@ -21953,6 +22773,74 @@ beach for Negroes in Washi</div>
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1926-12-18&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="legal_challenge" data-paper="houston-informer">
+            <td class="date-col">1926-12-18</td>
+            <td><span class="event-badge">legal_challenge</span></td>
+            <td>
+                <div class="event-desc">The El Pano branch of the National Association for the Advancement of Women is fundraising for a legal case challenging the constitutionality of Texas primary law that denies Black citizens the right to vote.</div>
+                <div class="event-meta">
+                    <span>Location: El Pano, Texas; Washington, D.C.</span>
+                    <span>Participants: National Association for the Advancement of Women (El Pano branch), W. Washington (president), Dr. L. A. Dikson (colored physician)</span>
+                    <span>Event date: January 3, 1927</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">The El Pano branch of the National Association for the Advancement of Women, W. Washington is president, is making an appeal for funds to push the United States to ratify the United States, wherein Dr</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-12-18&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="mass_meeting" data-paper="houston-informer">
+            <td class="date-col">1926-12-18</td>
+            <td><span class="event-badge">mass_meeting</span></td>
+            <td>
+                <div class="event-desc">A mass meeting held in Philadelphia to address segregation in schools, where speakers criticized the school administration&#x27;s jim-crow practices and gathered funds to fight segregation.</div>
+                <div class="event-meta">
+                    <span>Location: Philadelphia, Pennsylvania</span>
+                    <span>Participants: Philadelphia Negroes, prominent citizens, political workers, E. Washington Rhodes, Forrester W. Washington</span>
+                    <span>Event date: Sunday (date context suggests December 12, 1926)</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">(By the Associated Negro Press.)
+
+Philadelphia, Pa.—Philadelphia Negroes braved the storm of Sunday and gathered in large numbers at a meeting held in the interest of E. Washington Rhodes of the Phila</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1926-12-18&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="petition" data-paper="houston-informer">
+            <td class="date-col">1927-01-22</td>
+            <td><span class="event-badge">petition</span></td>
+            <td>
+                <div class="event-desc">Students made a plea demanding equal opportunity for all races.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: Students</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">&#x27;GIVE ALL RACES EQUAL CHANCE.&#x27; STUDENTS&#x27; PLEA</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-01-22&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -22001,6 +22889,82 @@ beach for Negroes in Washi</div>
                 </a>
             </td>
         </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1927-06-18</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">The NAACP intervened against discriminatory segregation tactics by school officials regarding a graduation class outing, with the local NAACP president taking action after colored students were told they could not attend.</div>
+                <div class="event-meta">
+                    <span>Location: Detroit, Michigan</span>
+                    <span>Participants: Colored students, NAACP officials, High School of Commerce administrators</span>
+                    <span>Event date: June 16, 1927</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">Wednesday morning&#x27;s session open.
+
+No Segregation
+In Detroit Schools
+
+(By The Associated Negro Press)
+Detroit, Mich., June 16—Because of discriminatory tactics about to be employed by the officials of</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-06-18&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1927-06-25</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">The NAACP telegraphed President Coolidge demanding a federal anti-lynching law in response to recent lynchings in Mississippi and South Carolina.</div>
+                <div class="event-meta">
+                    <span>Location: New York City</span>
+                    <span>Participants: National Association for the Advancement of Colored People (NAACP), James Weldon Johnson</span>
+                    <span>Event date: 1927-06-25</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">New York City—The National Association for the Advancement of Colored People, 89 Fifth Avenue, today telegraphed President Coolidge this attention that on the very day he celebrated Charles Lindbergh </div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-06-25&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="mass_meeting" data-paper="houston-informer">
+            <td class="date-col">1927-06-25</td>
+            <td><span class="event-badge">mass_meeting</span></td>
+            <td>
+                <div class="event-desc">A mass meeting of the 18th where speakers discussed legal victories before the U.S. Supreme Court and the importance of the colored vote in elections.</div>
+                <div class="event-meta">
+                    <span>Location: Boston</span>
+                    <span>Participants: Storey of Boston (former NAACP president), counsels and race leaders</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">BO&#x27;S Bulwark, Christ Contends
+
+His Legal Victories Scoled During Court—Counsels Race to &quot;Stand Weeble to Attend Conference.
+
+Storey, of Boston, former association, and national president the Advanceme</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-06-25&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
         <tr class="event-row" data-type="demonstration" data-paper="dallas-express">
             <td class="date-col">1927-09-03</td>
             <td><span class="event-badge">demonstration</span></td>
@@ -22019,6 +22983,50 @@ beach for Negroes in Washi</div>
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1927-09-03&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1927-09-03</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">Sleeping car workers plan to appeal their cause, likely to officials or the public.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: Sleeping car workers</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">SLEEPING CAR WORKERS WILL APPEAL CAUSE</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-09-03&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="delegation" data-paper="houston-informer">
+            <td class="date-col">1927-09-03</td>
+            <td><span class="event-badge">delegation</span></td>
+            <td>
+                <div class="event-desc">Sleeping car workers plan to appeal their cause, likely through formal appeal or delegation to authorities.</div>
+                <div class="event-meta">
+                    <span>Location: nan</span>
+                    <span>Participants: Sleeping car workers</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">SLEEPING CAR WORKERS WILL APPEAL CAUSE</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-09-03&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -22112,6 +23120,81 @@ employment and were attac</div>
             <td>
                 <a href="https://dangerouspress.org/?paper=dallas-express&date=1927-09-24&page=1" target="_blank" class="source-link">
                     Dallas Express<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="demonstration" data-paper="houston-informer">
+            <td class="date-col">1927-09-24</td>
+            <td><span class="event-badge">demonstration</span></td>
+            <td>
+                <div class="event-desc">Dock workers in New Orleans staged a riot, indicating a labor protest action.</div>
+                <div class="event-meta">
+                    <span>Location: New Orleans</span>
+                    <span>Participants: Dock workers</span>
+                    <span>Event date: nan</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">N. O. Dock Workers Stage Riot</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-09-24&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="parade" data-paper="houston-informer">
+            <td class="date-col">1927-09-24</td>
+            <td><span class="event-badge">parade</span></td>
+            <td>
+                <div class="event-desc">Union longshoremen organized a Labor Day celebration parade through the business district under police permit, which led to violent confrontation with nonunion workers.</div>
+                <div class="event-meta">
+                    <span>Location: New Orleans, Louisiana</span>
+                    <span>Participants: 150 colored longshoremen (union and nonunion), police reserves</span>
+                    <span>Event date: Labor Day 1927</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">New Orleans, La.—One hundred and fifty colored longshoremen, both union and nonunion, have been arrested and lodged in the parish prison on the charge of rioting, fighting and intimidation; and severa</div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-09-24&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
+                    <small>p. 1</small>
+                </a>
+            </td>
+        </tr>
+        <tr class="event-row" data-type="strike" data-paper="houston-informer">
+            <td class="date-col">1927-09-24</td>
+            <td><span class="event-badge">strike</span></td>
+            <td>
+                <div class="event-desc">A labor strike by colored longshoremen involving fighting, intimidation, arrests, and a parade through the business district led by a brass band.</div>
+                <div class="event-meta">
+                    <span>Location: Houston</span>
+                    <span>Participants: Colored longshoremen, union members, police/authorities</span>
+                    <span>Event date: 1927-09-24</span>
+                </div>
+                <details class="source-toggle">
+                    <summary>Source text</summary>
+                    <div class="source-text">WED
+Riot
+shoremen
+body Battle
+ed and fifty colored longshoremen,
+been arrested and lodged in the
+housing, fighting, and intimidation,
+burder. The feeling between the
+shoremen&#x27;s strike three years
+men </div>
+                </details>
+            </td>
+            <td>
+                <a href="https://dangerouspress.org/?paper=houston-informer&date=1927-09-24&page=1" target="_blank" class="source-link">
+                    Houston Informer<br>
                     <small>p. 1</small>
                 </a>
             </td>
@@ -23338,6 +24421,44 @@ to me that &quot;the mixing of the races (at the City Hospital) cannot be tolera
         typeFilter.addEventListener('change', filterRows);
         paperFilter.addEventListener('change', filterRows);
         textSearch.addEventListener('input', filterRows);
+
+        let sortCol = 'date';
+        let sortAsc = true;
+
+        function sortTable(col) {
+            if (sortCol === col) {
+                sortAsc = !sortAsc;
+            } else {
+                sortCol = col;
+                sortAsc = true;
+            }
+
+            const tbody = document.getElementById('events-body');
+            const rowsArr = Array.from(rows);
+
+            rowsArr.sort((a, b) => {
+                let va, vb;
+                if (col === 'date') {
+                    va = a.querySelector('.date-col').textContent;
+                    vb = b.querySelector('.date-col').textContent;
+                } else if (col === 'type') {
+                    va = a.dataset.type;
+                    vb = b.dataset.type;
+                } else if (col === 'paper') {
+                    va = a.dataset.paper;
+                    vb = b.dataset.paper;
+                }
+                if (va < vb) return sortAsc ? -1 : 1;
+                if (va > vb) return sortAsc ? 1 : -1;
+                return 0;
+            });
+
+            rowsArr.forEach(r => tbody.appendChild(r));
+
+            document.querySelectorAll('th .sort-arrow').forEach(s => s.textContent = '');
+            const th = document.querySelector(`th[data-col="${col}"]`);
+            if (th) th.querySelector('.sort-arrow').textContent = sortAsc ? '▲' : '▼';
+        }
     </script>
 </body>
 </html>

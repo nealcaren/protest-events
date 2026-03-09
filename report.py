@@ -118,7 +118,11 @@ def generate_html(events: pd.DataFrame) -> str:
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            cursor: pointer;
+            user-select: none;
         }}
+        th:hover {{ background: #007a66; }}
+        th .sort-arrow {{ font-size: 0.6rem; margin-left: 4px; }}
         td {{
             padding: 10px 14px;
             border-bottom: 1px solid #eee;
@@ -201,10 +205,10 @@ def generate_html(events: pd.DataFrame) -> str:
         <table>
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Type</th>
+                    <th data-col="date" onclick="sortTable('date')">Date <span class="sort-arrow">▲</span></th>
+                    <th data-col="type" onclick="sortTable('type')">Type <span class="sort-arrow"></span></th>
                     <th>Event</th>
-                    <th>Source</th>
+                    <th data-col="paper" onclick="sortTable('paper')">Source <span class="sort-arrow"></span></th>
                 </tr>
             </thead>
             <tbody id="events-body">
@@ -239,6 +243,44 @@ def generate_html(events: pd.DataFrame) -> str:
         typeFilter.addEventListener('change', filterRows);
         paperFilter.addEventListener('change', filterRows);
         textSearch.addEventListener('input', filterRows);
+
+        let sortCol = 'date';
+        let sortAsc = true;
+
+        function sortTable(col) {{
+            if (sortCol === col) {{
+                sortAsc = !sortAsc;
+            }} else {{
+                sortCol = col;
+                sortAsc = true;
+            }}
+
+            const tbody = document.getElementById('events-body');
+            const rowsArr = Array.from(rows);
+
+            rowsArr.sort((a, b) => {{
+                let va, vb;
+                if (col === 'date') {{
+                    va = a.querySelector('.date-col').textContent;
+                    vb = b.querySelector('.date-col').textContent;
+                }} else if (col === 'type') {{
+                    va = a.dataset.type;
+                    vb = b.dataset.type;
+                }} else if (col === 'paper') {{
+                    va = a.dataset.paper;
+                    vb = b.dataset.paper;
+                }}
+                if (va < vb) return sortAsc ? -1 : 1;
+                if (va > vb) return sortAsc ? 1 : -1;
+                return 0;
+            }});
+
+            rowsArr.forEach(r => tbody.appendChild(r));
+
+            document.querySelectorAll('th .sort-arrow').forEach(s => s.textContent = '');
+            const th = document.querySelector(`th[data-col="${{col}}"]`);
+            if (th) th.querySelector('.sort-arrow').textContent = sortAsc ? '▲' : '▼';
+        }}
     </script>
 </body>
 </html>"""
