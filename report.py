@@ -30,7 +30,7 @@ def generate_html(events: pd.DataFrame) -> str:
         participants = escape(str(ev.get("participants", "") or ""))
         event_type = escape(str(ev.get("event_type", "") or ""))
         date_mentioned = escape(str(ev.get("date_mentioned", "") or ""))
-        source_preview = escape(str(ev.get("source_text", ""))[:200])
+        source_preview = escape(str(ev.get("source_text", "")))
 
         rows_html.append(f"""
         <tr class="event-row" data-type="{event_type}" data-paper="{ev['paper']}">

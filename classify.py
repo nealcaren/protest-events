@@ -149,7 +149,7 @@ def main():
                     "location": result.get("location"),
                     "participants": result.get("participants"),
                     "date_mentioned": result.get("date_mentioned"),
-                    "source_text": str(row["text"])[:500],
+                    "source_text": str(row["text"])[:2000],
                 }
                 events.append(event)
                 yes_count += 1
