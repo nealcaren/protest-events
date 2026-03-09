@@ -1,0 +1,584 @@
+[
+  {
+    "id": 0,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 1,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 2,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 3,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 4,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 5,
+    "protest": "YES",
+    "key_phrases": [
+      "speech in the Senate",
+      "Tells United States Legislators They Should Not Intervene"
+    ]
+  },
+  {
+    "id": 6,
+    "protest": "YES",
+    "key_phrases": [
+      "Up in Arms",
+      "Threaten to Make Trouble",
+      "threatening to withdraw their support"
+    ]
+  },
+  {
+    "id": 7,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 8,
+    "protest": "YES",
+    "key_phrases": [
+      "FIRST NATIONAL CONFERENCE ON LYNCHING"
+    ]
+  },
+  {
+    "id": 9,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 10,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 11,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 12,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 13,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 14,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 15,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 16,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 17,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 18,
+    "protest": "YES",
+    "key_phrases": [
+      "N. A. A. C. P. Will Out Questionnaires",
+      "announces that a questionnaire"
+    ]
+  },
+  {
+    "id": 19,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 20,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 21,
+    "protest": "YES",
+    "key_phrases": [
+      "oppose Patterson's confirmation",
+      "protest against him"
+    ]
+  },
+  {
+    "id": 22,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 23,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 24,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 25,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 26,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 27,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 28,
+    "protest": "YES",
+    "key_phrases": [
+      "written condemning",
+      "demanding that segregation be discontinued"
+    ]
+  },
+  {
+    "id": 29,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 30,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 31,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 32,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 33,
+    "protest": "YES",
+    "key_phrases": [
+      "appeal to you to come together",
+      "march forward"
+    ]
+  },
+  {
+    "id": 34,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 35,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 36,
+    "protest": "YES",
+    "key_phrases": [
+      "PROTEST TO THE PRESIDENT",
+      "PROTEST TO THE PRESIDENT AGAINST RIOTS AND LYNCH INGS"
+    ]
+  },
+  {
+    "id": 37,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 38,
+    "protest": "YES",
+    "key_phrases": [
+      "strike"
+    ]
+  },
+  {
+    "id": 39,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 40,
+    "protest": "YES",
+    "key_phrases": [
+      "BAR",
+      "CLARENCE DARROW FROM CHURCHES"
+    ]
+  },
+  {
+    "id": 41,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 42,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 43,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 44,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 45,
+    "protest": "YES",
+    "key_phrases": [
+      "telegrams sent to Governors",
+      "with reference to lynchings"
+    ]
+  },
+  {
+    "id": 46,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 47,
+    "protest": "YES",
+    "key_phrases": [
+      "Effort Will Be Made To Severely Punish Lynchers",
+      "LYNCHING DEPLORED"
+    ]
+  },
+  {
+    "id": 48,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 49,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 50,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 51,
+    "protest": "YES",
+    "key_phrases": [
+      "redoubled his energy",
+      "we are going to put it over",
+      "demand the r"
+    ]
+  },
+  {
+    "id": 52,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 53,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 54,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 55,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 56,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 57,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 58,
+    "protest": "YES",
+    "key_phrases": [
+      "N. A. A. C. P. perade",
+      "delegates"
+    ]
+  },
+  {
+    "id": 59,
+    "protest": "YES",
+    "key_phrases": [
+      "OBJECT TO HISTORY",
+      "colored citizens"
+    ]
+  },
+  {
+    "id": 60,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 61,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 62,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 63,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 64,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 65,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 66,
+    "protest": "YES",
+    "key_phrases": [
+      "FEDERAL COUNCIL OF CHURCHES SPONSORS RACIAL CONFERENCE",
+      "Executive Committee Takes Emphatic Stand",
+      "Enforcement of All Amendments"
+    ]
+  },
+  {
+    "id": 67,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 68,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 69,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 70,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 71,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 72,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 73,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 74,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 75,
+    "protest": "YES",
+    "key_phrases": [
+      "five Colored men representing the National Independent Political League, called on",
+      "had a long pleasant interview with Gov. Woodrow Wilson"
+    ]
+  },
+  {
+    "id": 76,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 77,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 78,
+    "protest": "YES",
+    "key_phrases": [
+      "masked men rode through the street",
+      "parade",
+      "marchers"
+    ]
+  },
+  {
+    "id": 79,
+    "protest": "YES",
+    "key_phrases": [
+      "N.A.A.C.P. Informs Nation",
+      "made public telegrams sent to President Harding and Governor Dorsey"
+    ]
+  },
+  {
+    "id": 80,
+    "protest": "YES",
+    "key_phrases": [
+      "active and organized protests of the Colored women",
+      "fight to eliminate"
+    ]
+  },
+  {
+    "id": 81,
+    "protest": "YES",
+    "key_phrases": [
+      "Colored Men's Civic association",
+      "gone into the American Federation of Labor"
+    ]
+  },
+  {
+    "id": 82,
+    "protest": "YES",
+    "key_phrases": [
+      "Tenth Annual Conference",
+      "Demands Equal Rights and Attacks Lynching",
+      "mass meeting"
+    ]
+  },
+  {
+    "id": 83,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 84,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 85,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 86,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 87,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 88,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 89,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 90,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 91,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 92,
+    "protest": "YES",
+    "key_phrases": [
+      "ADDRESS TO AMERICAN PEOPLE",
+      "eighteenth annual conference"
+    ]
+  },
+  {
+    "id": 93,
+    "protest": "YES",
+    "key_phrases": [
+      "over-flow meeting",
+      "candidate for Ward Committeman"
+    ]
+  },
+  {
+    "id": 94,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 95,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 96,
+    "protest": "NO",
+    "key_phrases": []
+  },
+  {
+    "id": 97,
+    "protest": "YES",
+    "key_phrases": [
+      "disregard for the constitutional rights",
+      "investigation made by the National association"
+    ]
+  },
+  {
+    "id": 98,
+    "protest": "YES",
+    "key_phrases": [
+      "subdued ill feeling",
+      "chapel was crowded",
+      "decided leaning toward the students"
+    ]
+  },
+  {
+    "id": 99,
+    "protest": "NO",
+    "key_phrases": []
+  }
+]

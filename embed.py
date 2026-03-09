@@ -1,4 +1,4 @@
-"""Stage 1: Extract text from OCR JSONs and create embeddings via OpenAI API."""
+"""Stage 1: Extract text from OCR JSONs, chunk by page, and create embeddings via OpenAI API."""
 
 import json
 import csv
@@ -6,6 +6,7 @@ import time
 import random
 import argparse
 from pathlib import Path
+from collections import defaultdict
 
 import numpy as np
 import openai
@@ -14,10 +15,14 @@ from config import OCR_DIR, DATA_DIR, EMBEDDINGS_FILE, METADATA_FILE, EMBEDDING_
 
 SHARDS_DIR = DATA_DIR / "shards"
 
+# Chunking config
+TARGET_CHUNKS_PER_PAGE = 8
+OVERLAP_FRACTION = 0.5  # 50% overlap between consecutive chunks
 
-def extract_regions(ocr_dir: Path, max_files: int = 0) -> list[dict]:
-    """Extract all text regions from OCR JSONs with metadata."""
-    regions = []
+
+def extract_page_texts(ocr_dir: Path, max_files: int = 0) -> list[dict]:
+    """Extract text from OCR JSONs, concatenate by page in reading order,
+    then split into overlapping chunks."""
     json_files = sorted(ocr_dir.rglob("*.json"))
     print(f"Found {len(json_files)} JSON files")
 
@@ -26,14 +31,15 @@ def extract_regions(ocr_dir: Path, max_files: int = 0) -> list[dict]:
         json_files = json_files[:max_files]
         print(f"Sampling {max_files} files")
 
+    chunks = []
+
     for jf in json_files:
         try:
             data = json.loads(jf.read_text())
         except (json.JSONDecodeError, UnicodeDecodeError):
             continue
 
-        # Parse path: paper/year/date/page_XX.json
-        # or: ocr-results/paper/year/date/page_XX.json (Longleaf)
+        # Parse path
         rel = jf.relative_to(ocr_dir)
         parts = rel.parts
         if len(parts) < 4:
@@ -47,82 +53,160 @@ def extract_regions(ocr_dir: Path, max_files: int = 0) -> list[dict]:
         page = jf.stem
         page_num = int(page.split("_")[1]) if "_" in page else 1
 
-        for i, region in enumerate(data.get("regions", [])):
+        # Collect all text regions in order (already in reading order from OCR pipeline)
+        region_texts = []
+        for region in data.get("regions", []):
             text = region.get("text", "").strip()
-            if not text or len(text) < 20:
+            if not text:
                 continue
             if region.get("status") != "ok":
                 continue
+            region_texts.append(text)
 
-            regions.append({
+        if not region_texts:
+            continue
+
+        # Concatenate all regions into full page text
+        full_text = "\n\n".join(region_texts)
+
+        # Split into overlapping chunks
+        page_chunks = make_chunks(full_text, TARGET_CHUNKS_PER_PAGE, OVERLAP_FRACTION)
+
+        for i, chunk_text in enumerate(page_chunks):
+            if len(chunk_text.strip()) < 20:
+                continue
+            chunks.append({
                 "paper": paper,
                 "date": date,
                 "page": page_num,
-                "region_idx": i,
-                "label": region.get("label", "text"),
-                "text": text,
+                "chunk_idx": i,
+                "n_chunks": len(page_chunks),
+                "text": chunk_text,
             })
 
-    return regions
+    return chunks
 
 
-def embed_batch(client: openai.OpenAI, texts: list[str], model: str) -> np.ndarray:
-    """Embed a batch of texts via OpenAI API."""
-    resp = client.embeddings.create(input=texts, model=model)
-    return np.array([d.embedding for d in resp.data], dtype=np.float32)
+def make_chunks(text: str, target_chunks: int, overlap: float) -> list[str]:
+    """Split text into approximately target_chunks overlapping chunks.
+
+    Uses paragraph boundaries where possible for cleaner splits.
+    """
+    paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+
+    if len(paragraphs) <= 1:
+        # Too short to chunk meaningfully
+        return [text]
+
+    # If fewer paragraphs than target chunks, each paragraph is a chunk
+    # with overlap by including neighbor paragraphs
+    if len(paragraphs) <= target_chunks:
+        chunks = []
+        for i in range(len(paragraphs)):
+            # Include previous paragraph for context (overlap)
+            start = max(0, i - 1)
+            chunk = "\n\n".join(paragraphs[start:i + 1])
+            chunks.append(chunk)
+        return chunks
+
+    # More paragraphs than target chunks: group paragraphs into windows
+    step = max(1, len(paragraphs) // target_chunks)
+    window = max(step, int(step / (1 - overlap))) if overlap < 1 else step
+
+    chunks = []
+    i = 0
+    while i < len(paragraphs):
+        end = min(i + window, len(paragraphs))
+        chunk = "\n\n".join(paragraphs[i:end])
+        chunks.append(chunk)
+        i += step
+        if end == len(paragraphs):
+            break
+
+    return chunks
+
+
+MAX_TOKENS_PER_REQUEST = 250_000  # stay under OpenAI's 300K limit
+
+
+def estimate_tokens(text: str) -> int:
+    """Rough token estimate: ~4 chars per token."""
+    return len(text) // 4
+
+
+def embed_texts(client: openai.OpenAI, texts: list[str], model: str) -> np.ndarray:
+    """Embed texts, automatically splitting into sub-batches to stay under token limits."""
+    all_embeddings = []
+    batch = []
+    batch_tokens = 0
+
+    for text in texts:
+        t = estimate_tokens(text)
+        if batch and batch_tokens + t > MAX_TOKENS_PER_REQUEST:
+            resp = client.embeddings.create(input=batch, model=model)
+            all_embeddings.extend([d.embedding for d in resp.data])
+            batch = []
+            batch_tokens = 0
+        batch.append(text)
+        batch_tokens += t
+
+    if batch:
+        resp = client.embeddings.create(input=batch, model=model)
+        all_embeddings.extend([d.embedding for d in resp.data])
+
+    return np.array(all_embeddings, dtype=np.float32)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-files", type=int, default=0,
                         help="Max JSON files to process (0 = all)")
-    parser.add_argument("--batch-size", type=int, default=2000,
-                        help="Texts per API call (max ~8K for OpenAI)")
+    parser.add_argument("--batch-size", type=int, default=1000,
+                        help="Texts per API call")
     args = parser.parse_args()
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     SHARDS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Extract
-    print("Extracting regions from OCR JSONs...")
+    # Extract and chunk
+    print("Extracting and chunking page texts...")
     t0 = time.time()
-    regions = extract_regions(OCR_DIR, max_files=args.max_files)
-    print(f"Extracted {len(regions)} regions in {time.time()-t0:.1f}s")
+    chunks = extract_page_texts(OCR_DIR, max_files=args.max_files)
+    print(f"Created {len(chunks)} chunks from {args.max_files or 'all'} files in {time.time()-t0:.1f}s")
 
-    if not regions:
-        print("No regions found. Check OCR_DIR in config.py")
+    if not chunks:
+        print("No chunks created. Check OCR_DIR in config.py")
         return
 
     # Save metadata
     print(f"Saving metadata to {METADATA_FILE}...")
     with open(METADATA_FILE, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["paper", "date", "page", "region_idx", "label", "text"])
+        writer = csv.DictWriter(f, fieldnames=["paper", "date", "page", "chunk_idx", "n_chunks", "text"])
         writer.writeheader()
-        writer.writerows(regions)
+        writer.writerows(chunks)
 
     # Check existing shards for resume
     existing_shards = sorted(SHARDS_DIR.glob("batch_*.npy"))
     start_batch = len(existing_shards)
     start_idx = start_batch * args.batch_size
 
-    if start_idx >= len(regions):
-        print(f"All {len(regions)} regions already embedded in {len(existing_shards)} shards.")
+    if start_idx >= len(chunks):
+        print(f"All {len(chunks)} chunks already embedded in {len(existing_shards)} shards.")
     else:
         if start_batch > 0:
-            print(f"Resuming from batch {start_batch} ({start_idx} regions already done)")
+            print(f"Resuming from batch {start_batch} ({start_idx} chunks already done)")
 
-        # Embed remaining via OpenAI
-        texts = [r["text"][:8000] for r in regions]
+        texts = [c["text"][:8000] for c in chunks]
         client = openai.OpenAI()
         total_batches = (len(texts) + args.batch_size - 1) // args.batch_size
 
-        print(f"Embedding {len(texts) - start_idx} remaining regions with {EMBEDDING_MODEL}...")
+        print(f"Embedding {len(texts) - start_idx} remaining chunks with {EMBEDDING_MODEL}...")
         t0 = time.time()
 
         for batch_num in range(start_batch, total_batches):
             i = batch_num * args.batch_size
             batch = texts[i:i + args.batch_size]
-            embs = embed_batch(client, batch, EMBEDDING_MODEL)
+            embs = embed_texts(client, batch, EMBEDDING_MODEL)
 
             shard_path = SHARDS_DIR / f"batch_{batch_num:04d}.npy"
             np.save(shard_path, embs)

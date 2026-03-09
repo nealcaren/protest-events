@@ -16,39 +16,44 @@ REPORT_FILE = DATA_DIR / "events.html"
 EMBEDDING_MODEL = "text-embedding-3-small"
 
 # Search config
-SIMILARITY_THRESHOLD = 0.70
+SIMILARITY_THRESHOLD = 0.50
 MAX_CANDIDATES_PER_QUERY = 200
 
-# Seed queries — refined after exploring 1K sample results
+# Seed queries — derived from actual newspaper language via sample coding
 SEED_QUERIES = [
-    # Direct action
-    "protest march through the streets",
-    "demonstration against discrimination",
-    "mass meeting held to protest",
-    "silent protest parade",
-    "parade through the city",
-    # Petitions and delegations
-    "petition signed by citizens",
-    "delegation presented demands",
-    "citizens assembled to protest",
-    "committee waited upon the governor",
-    # Anti-lynching movement
-    "mass protest against lynching",
-    "anti-lynching crusade",
-    "NAACP protests against lynching",
-    # Racial violence and resistance
-    "race riot",
-    "mob violence against Negroes",
-    "colored citizens organize for defense",
+    # Collective action and mobilization
+    "colored citizens up in arms and threaten to make trouble against discriminatory practices",
+    "appeal to colored people to come together and march forward for justice",
+    "active and organized protests of colored women backed by numerous organizations",
+    "mass meeting held to discuss school conditions and organize for educational equality",
+    # Anti-lynching
+    "national association made public telegrams sent to governors with reference to lynchings",
+    "effort will be made to severely punish those responsible for mob violence",
+    "first national conference on lynching examining causes and demanding federal action",
+    "speakers denounced the lynching and called for federal legislation to stop mob rule",
+    # Delegations and petitions
+    "protest to the president against riots and lynchings seeking public word of hope",
+    "committee of graduates written condemning jim crow policy and demanding segregation be discontinued",
+    "colored men representing political league called upon presidential candidate for interview",
+    "a committee of prominent colored citizens called upon the governor to present a petition",
+    # NAACP and organizational
+    "delegates to annual conference demands equal rights and attacks lynching",
+    "national association made address to american people at annual conference",
+    "investigation made by the national association regarding disregard for constitutional rights",
+    "federal council of churches takes emphatic stand for enforcement of constitutional amendments",
     # Labor and economic
-    "workers went on strike",
-    "boycott of stores",
-    "laborers on strike",
-    # Civil rights actions
-    "protest against Jim Crow",
-    "fight against segregation",
-    "demand equal rights for Negroes",
-    "revolt against discrimination",
+    "strike by workers against company discrimination in employment practices",
+    "colored workers refused to return to work until the Jim Crow conditions were removed",
+    "a boycott was declared against the stores that refused to serve Negro customers",
+    # Legislative and political protest
+    "opposing confirmation of colored nominee through concerted action by senators",
+    "questionnaires sent to presidential aspirants regarding their stance on racial equality",
+    "colored citizens object to history textbooks and railroad discrimination",
+    # Marches and parades
+    "a large procession of Negro men and women marched through the streets bearing signs",
+    "thousands of colored citizens marched silently down the avenue in protest",
+    # Race riots and defense
+    "rioting broke out when a mob attacked the colored section of the city",
 ]
 
 # Classification

@@ -114,7 +114,7 @@ def main():
     # Filter to unprocessed candidates
     to_process = []
     for _, row in candidates.iterrows():
-        key = f"{row['paper']}|{row['date']}|{row['page']}|{row['region_idx']}"
+        key = f"{row['paper']}|{row['date']}|{row['page']}|{row['chunk_idx']}"
         if key not in processed_keys:
             to_process.append(row.to_dict())
 
@@ -133,7 +133,7 @@ def main():
 
         for future in as_completed(futures):
             row, result = future.result()
-            key = f"{row['paper']}|{row['date']}|{row['page']}|{row['region_idx']}"
+            key = f"{row['paper']}|{row['date']}|{row['page']}|{row['chunk_idx']}"
             done += 1
 
             if result and result.get("is_protest"):
@@ -141,7 +141,7 @@ def main():
                     "paper": row["paper"],
                     "date": row["date"],
                     "page": row["page"],
-                    "region_idx": row["region_idx"],
+                    "chunk_idx": row["chunk_idx"],
                     "similarity": round(row["similarity"], 3),
                     "matched_query": row["matched_query"],
                     "event_type": result.get("event_type"),

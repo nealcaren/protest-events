@@ -21,15 +21,15 @@ from config import (
     EVENTS_FILE, EMBEDDING_MODEL, SEED_QUERIES, SIMILARITY_THRESHOLD,
     HAIKU_MODEL,
 )
-from embed import extract_regions
+from embed import extract_page_texts
 from classify import SYSTEM_PROMPT, USER_TEMPLATE
 
 SHARDS_DIR = DATA_DIR / "shards"
 
 
 def embed_batch_openai(client: openai.OpenAI, texts: list[str], model: str) -> np.ndarray:
-    resp = client.embeddings.create(input=texts, model=model)
-    return np.array([d.embedding for d in resp.data], dtype=np.float32)
+    from embed import embed_texts
+    return embed_texts(client, texts, model)
 
 
 def embed_queries(client: openai.OpenAI, queries: list[str], model: str) -> np.ndarray:
@@ -99,7 +99,7 @@ def classify_candidates(candidates: pd.DataFrame, anthropic_client: anthropic.An
                     "paper": row["paper"],
                     "date": row["date"],
                     "page": row["page"],
-                    "region_idx": row["region_idx"],
+                    "chunk_idx": row["chunk_idx"],
                     "similarity": round(row["similarity"], 3),
                     "matched_query": row["matched_query"],
                     "event_type": result.get("event_type"),
@@ -126,16 +126,16 @@ def main():
     # Extract regions
     print("Extracting regions...")
     t0 = time.time()
-    regions = extract_regions(OCR_DIR, max_files=args.max_files)
-    print(f"Extracted {len(regions)} regions in {time.time()-t0:.1f}s")
+    regions = extract_page_texts(OCR_DIR, max_files=args.max_files)
+    print(f"Created {len(regions)} chunks in {time.time()-t0:.1f}s")
 
     if not regions:
-        print("No regions found.")
+        print("No chunks found.")
         return
 
     # Save metadata
     with open(METADATA_FILE, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["paper", "date", "page", "region_idx", "label", "text"])
+        writer = csv.DictWriter(f, fieldnames=["paper", "date", "page", "chunk_idx", "n_chunks", "text"])
         writer.writeheader()
         writer.writerows(regions)
 
@@ -188,7 +188,7 @@ def main():
         # Filter already-classified
         if not candidates.empty and processed_keys:
             candidates = candidates[candidates.apply(
-                lambda r: f"{r['paper']}|{r['date']}|{r['page']}|{r['region_idx']}" not in processed_keys, axis=1
+                lambda r: f"{r['paper']}|{r['date']}|{r['page']}|{r['chunk_idx']}" not in processed_keys, axis=1
             )]
 
         # 3. Classify
@@ -199,7 +199,7 @@ def main():
 
             # Track processed
             for _, r in candidates.iterrows():
-                processed_keys.add(f"{r['paper']}|{r['date']}|{r['page']}|{r['region_idx']}")
+                processed_keys.add(f"{r['paper']}|{r['date']}|{r['page']}|{r['chunk_idx']}")
 
         # Save checkpoint
         if all_events:
