@@ -1,0 +1,13 @@
+[project]
+name = "protest-events"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "openai",
+    "anthropic",
+    "pandas",
+    "numpy",
+]
+
+[tool.uv]
+dev-dependencies = []
