@@ -2,13 +2,16 @@
 
 import json
 import argparse
+from pathlib import Path
 from html import escape
 from collections import defaultdict
 
 import pandas as pd
 
-from config import REPORT_FILE, SITE_BASE_URL, DATA_DIR, ISSUE_CATEGORIES
+from config import REPORT_FILE, SITE_BASE_URL, DATA_DIR, ISSUE_CATEGORIES, PAPER_LOCATIONS
 from db import get_connection, init_db
+
+SITE_DATA_DIR = Path(__file__).parent / "site" / "public" / "data"
 
 
 ISSUE_LABELS = {
@@ -486,7 +489,262 @@ def generate_html(events: pd.DataFrame, event_sources: dict,
 </html>"""
 
 
+def load_org_normalizations(conn):
+    """Load org normalization map: original_name → canonical_name (or None if excluded)."""
+    rows = conn.execute("SELECT original_name, canonical_name, excluded FROM org_normalizations").fetchall()
+    norm = {}
+    for r in rows:
+        if r["excluded"]:
+            norm[r["original_name"]] = None
+        else:
+            norm[r["original_name"]] = r["canonical_name"]
+    return norm
+
+
+def normalize_org_list(orgs, org_norm):
+    """Apply normalization to a list of org names. Removes excluded, deduplicates."""
+    result = []
+    seen = set()
+    for o in orgs:
+        canonical = org_norm.get(o, o)  # default to original if not in table
+        if canonical is None:  # excluded
+            continue
+        if canonical not in seen:
+            seen.add(canonical)
+            result.append(canonical)
+    return result
+
+
+def export_json():
+    """Export deduplicated events, campaigns, and metadata as JSON for the Svelte frontend."""
+    SITE_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    conn = get_connection()
+    init_db(conn)
+
+    # Get canonical event IDs from dedup_groups
+    canonical_ids = set()
+    rows = conn.execute("SELECT DISTINCT canonical_event_id FROM dedup_groups").fetchall()
+    for r in rows:
+        canonical_ids.add(r["canonical_event_id"])
+
+    # Get singleton events (not in dedup_groups at all)
+    all_event_ids = {r["id"] for r in conn.execute("SELECT id FROM events").fetchall()}
+    grouped_ids = {r["event_id"] for r in conn.execute("SELECT event_id FROM dedup_groups").fetchall()}
+    singleton_ids = all_event_ids - grouped_ids
+
+    export_ids = canonical_ids | singleton_ids
+    print(f"Exporting {len(export_ids)} events ({len(canonical_ids)} canonical, {len(singleton_ids)} singletons)")
+
+    # Load org normalization
+    org_norm = load_org_normalizations(conn)
+    print(f"Loaded {len(org_norm)} org normalization mappings")
+
+    # Load all events in the export set
+    events_out = []
+    for eid in sorted(export_ids):
+        ev = conn.execute("""
+            SELECT e.id as event_id, e.chunk_id, e.event_type, e.description,
+                   e.location, e.participants, e.date_mentioned, e.source_text,
+                   e.similarity, e.matched_query
+            FROM events e WHERE e.id = ?
+        """, (eid,)).fetchone()
+        if ev is None:
+            continue
+
+        # Event details
+        ed = conn.execute("""
+            SELECT issue_primary, issue_secondary, organizations, individuals,
+                   target, size_min, size_max, size_text, tactics, campaign_name,
+                   actor_type, actor_race_explicit, location_city, location_state
+            FROM event_details WHERE event_id = ?
+        """, (eid,)).fetchone()
+
+        # Sources with source_text from chunks
+        sources_rows = conn.execute("""
+            SELECT c.paper, c.date, c.page, c.chunk_idx, c.text as source_text, es.role
+            FROM event_sources es
+            JOIN chunks c ON c.id = es.chunk_id
+            WHERE es.event_id = ?
+            ORDER BY c.date, c.paper
+        """, (eid,)).fetchall()
+        sources = [
+            {
+                "paper": s["paper"], "date": s["date"], "page": s["page"],
+                "chunk_idx": s["chunk_idx"], "source_text": s["source_text"],
+                "role": s["role"],
+            }
+            for s in sources_rows
+        ]
+
+        # Campaign IDs
+        campaign_rows = conn.execute("""
+            SELECT campaign_id FROM event_campaigns WHERE event_id = ?
+        """, (eid,)).fetchall()
+        campaign_ids = [r["campaign_id"] for r in campaign_rows]
+
+        # Get date from chunk
+        chunk_date = conn.execute(
+            "SELECT date FROM chunks WHERE id = ?", (ev["chunk_id"],)
+        ).fetchone()
+
+        obj = {
+            "id": ev["event_id"],
+            "date": chunk_date["date"] if chunk_date else (sources[0]["date"] if sources else None),
+            "event_type": ev["event_type"],
+            "description": ev["description"],
+            "sources": sources,
+            "campaign_ids": campaign_ids,
+        }
+
+        if ed:
+            obj.update({
+                "issue_primary": ed["issue_primary"],
+                "issue_secondary": ed["issue_secondary"],
+                "organizations": normalize_org_list(parse_json_field(ed["organizations"]), org_norm),
+                "individuals": parse_json_field(ed["individuals"]),
+                "target": ed["target"],
+                "size_min": ed["size_min"],
+                "size_max": ed["size_max"],
+                "size_text": ed["size_text"],
+                "tactics": parse_json_field(ed["tactics"]),
+                "campaign_name": ed["campaign_name"],
+                "actor_type": ed["actor_type"],
+                "actor_race_explicit": ed["actor_race_explicit"],
+                "location_city": ed["location_city"],
+                "location_state": ed["location_state"],
+            })
+
+        events_out.append(obj)
+
+    # Write events.json
+    events_path = SITE_DATA_DIR / "events.json"
+    events_path.write_text(json.dumps(events_out, indent=2))
+    print(f"Wrote {len(events_out)} events to {events_path}")
+
+    # Campaigns — filter event_ids to export set
+    campaigns_rows = conn.execute("SELECT * FROM campaigns ORDER BY event_count DESC").fetchall()
+    campaigns_out = []
+    for c in campaigns_rows:
+        camp = dict(c)
+        # Get event_ids for this campaign, filtered to export set
+        ce_rows = conn.execute(
+            "SELECT event_id FROM event_campaigns WHERE campaign_id = ?", (camp["id"],)
+        ).fetchall()
+        camp["event_ids"] = [r["event_id"] for r in ce_rows if r["event_id"] in export_ids]
+        campaigns_out.append(camp)
+
+    campaigns_path = SITE_DATA_DIR / "campaigns.json"
+    campaigns_path.write_text(json.dumps(campaigns_out, indent=2))
+    print(f"Wrote {len(campaigns_out)} campaigns to {campaigns_path}")
+
+    # Meta — summary stats
+    issue_counts = defaultdict(int)
+    for ev in events_out:
+        ip = ev.get("issue_primary")
+        if ip:
+            issue_counts[ip] += 1
+
+    # Date range from sources
+    all_dates = [s["date"] for ev in events_out for s in ev.get("sources", []) if s.get("date")]
+    date_range = [min(all_dates), max(all_dates)] if all_dates else [None, None]
+
+    newspapers = [
+        {"slug": slug, "name": slug.replace("-", " ").title(), "location": loc}
+        for slug, loc in sorted(PAPER_LOCATIONS.items())
+    ]
+
+    meta = {
+        "total_events": len(events_out),
+        "total_campaigns": len(campaigns_out),
+        "total_newspapers": len(PAPER_LOCATIONS),
+        "date_range": date_range,
+        "issue_counts": dict(issue_counts),
+        "newspaper_list": newspapers,
+    }
+    meta_path = SITE_DATA_DIR / "meta.json"
+    meta_path.write_text(json.dumps(meta, indent=2))
+    print(f"Wrote metadata to {meta_path}")
+
+    # Organizations — aggregate from normalized events
+    org_data = defaultdict(lambda: {
+        "event_ids": [], "issues": defaultdict(int),
+        "dates": [], "papers": set()
+    })
+    for ev in events_out:
+        for org_name in ev.get("organizations", []):
+            d = org_data[org_name]
+            d["event_ids"].append(ev["id"])
+            ip = ev.get("issue_primary")
+            if ip:
+                d["issues"][ip] += 1
+            if ev.get("date"):
+                d["dates"].append(ev["date"])
+            for s in ev.get("sources", []):
+                d["papers"].add(s["paper"])
+
+    orgs_out = []
+    for i, (name, d) in enumerate(sorted(org_data.items(), key=lambda x: -len(x[1]["event_ids"]))):
+        dates = sorted(d["dates"])
+        top_issue = max(d["issues"].items(), key=lambda x: x[1])[0] if d["issues"] else None
+        orgs_out.append({
+            "id": i + 1,
+            "name": name,
+            "event_count": len(d["event_ids"]),
+            "event_ids": d["event_ids"],
+            "date_start": dates[0] if dates else None,
+            "date_end": dates[-1] if dates else None,
+            "issue_primary": top_issue,
+            "issue_counts": dict(d["issues"]),
+            "newspapers": sorted(d["papers"]),
+        })
+
+    orgs_path = SITE_DATA_DIR / "organizations.json"
+    orgs_path.write_text(json.dumps(orgs_out, indent=2))
+    print(f"Wrote {len(orgs_out)} organizations to {orgs_path}")
+
+    # Org network — co-occurrence graph for orgs with 3+ events
+    cooccur = defaultdict(int)
+    for ev in events_out:
+        orgs = sorted(set(ev.get("organizations", [])))
+        for a_idx, a in enumerate(orgs):
+            for b in orgs[a_idx + 1:]:
+                cooccur[(a, b)] += 1
+
+    min_events = 3
+    min_cooccur = 2
+    active_orgs = {o["name"] for o in orgs_out if o["event_count"] >= min_events}
+    org_id_map = {o["name"]: o["id"] for o in orgs_out}
+
+    nodes = [{"id": o["id"], "name": o["name"], "event_count": o["event_count"],
+              "issue_primary": o["issue_primary"]}
+             for o in orgs_out if o["name"] in active_orgs]
+    edges = [{"source": org_id_map[a], "target": org_id_map[b], "weight": count}
+             for (a, b), count in sorted(cooccur.items(), key=lambda x: -x[1])
+             if a in active_orgs and b in active_orgs and count >= min_cooccur]
+
+    network = {"nodes": nodes, "edges": edges}
+    network_path = SITE_DATA_DIR / "org_network.json"
+    network_path.write_text(json.dumps(network, indent=2))
+    print(f"Wrote org network: {len(nodes)} nodes, {len(edges)} edges to {network_path}")
+
+    meta["total_organizations"] = len(orgs_out)
+
+    # Re-write meta with org count
+    meta_path.write_text(json.dumps(meta, indent=2))
+
+    conn.close()
+
+
 def main():
+    parser = argparse.ArgumentParser(description="Generate report or export JSON")
+    parser.add_argument("--json", action="store_true", help="Export JSON for Svelte frontend")
+    args = parser.parse_args()
+
+    if args.json:
+        export_json()
+        return
+
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     conn = get_connection()

@@ -14,3 +14,5 @@ ocr-results.zip
 __pycache__/
 *.pyc
 .DS_Store
+site/node_modules/
+site/dist/

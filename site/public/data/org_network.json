@@ -1,0 +1,794 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "name": "NAACP",
+      "event_count": 952,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 2,
+      "name": "National Equal Rights League",
+      "event_count": 171,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 3,
+      "name": "UNIA",
+      "event_count": 118,
+      "issue_primary": "pan_african"
+    },
+    {
+      "id": 4,
+      "name": "African Methodist Episcopal Church",
+      "event_count": 52,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 5,
+      "name": "Afro-American Council",
+      "event_count": 46,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 6,
+      "name": "Ku Klux Klan",
+      "event_count": 39,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 7,
+      "name": "National Urban League",
+      "event_count": 37,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 8,
+      "name": "Brotherhood of Sleeping Car Porters",
+      "event_count": 36,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 9,
+      "name": "National Race Congress",
+      "event_count": 33,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 10,
+      "name": "National Association of Colored Women",
+      "event_count": 30,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 11,
+      "name": "American Legion",
+      "event_count": 29,
+      "issue_primary": "military"
+    },
+    {
+      "id": 12,
+      "name": "American Federation of Labor",
+      "event_count": 29,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 13,
+      "name": "Associated Negro Press",
+      "event_count": 29,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 14,
+      "name": "Niagara Movement",
+      "event_count": 29,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 15,
+      "name": "YMCA",
+      "event_count": 24,
+      "issue_primary": "segregation_public"
+    },
+    {
+      "id": 16,
+      "name": "Republican Party",
+      "event_count": 21,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 17,
+      "name": "National Independent Political League",
+      "event_count": 21,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 18,
+      "name": "Constitution League",
+      "event_count": 17,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 19,
+      "name": "National Negro Business League",
+      "event_count": 17,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 20,
+      "name": "National Baptist Convention",
+      "event_count": 17,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 21,
+      "name": "Knights of Pythias",
+      "event_count": 16,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 22,
+      "name": "YWCA",
+      "event_count": 15,
+      "issue_primary": "segregation_public"
+    },
+    {
+      "id": 23,
+      "name": "Grand United Order of Odd Fellows",
+      "event_count": 15,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 24,
+      "name": "National Independent Equal Rights League",
+      "event_count": 13,
+      "issue_primary": "government_discrimination"
+    },
+    {
+      "id": 25,
+      "name": "Methodist Episcopal Church",
+      "event_count": 12,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 26,
+      "name": "Tuskegee Institute",
+      "event_count": 11,
+      "issue_primary": "education"
+    },
+    {
+      "id": 27,
+      "name": "Pan-African Congress",
+      "event_count": 11,
+      "issue_primary": "pan_african"
+    },
+    {
+      "id": 28,
+      "name": "National Medical Association",
+      "event_count": 11,
+      "issue_primary": "healthcare"
+    },
+    {
+      "id": 29,
+      "name": "Citizens Liberty League",
+      "event_count": 10,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 30,
+      "name": "Lincoln League",
+      "event_count": 9,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 31,
+      "name": "Civil Rights Protective League",
+      "event_count": 9,
+      "issue_primary": "education"
+    },
+    {
+      "id": 32,
+      "name": "A. M. E. Zion Church",
+      "event_count": 9,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 33,
+      "name": "Howard University",
+      "event_count": 9,
+      "issue_primary": "military"
+    },
+    {
+      "id": 34,
+      "name": "African Blood Brotherhood",
+      "event_count": 8,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 35,
+      "name": "Grand Army of the Republic",
+      "event_count": 8,
+      "issue_primary": "cultural_media"
+    },
+    {
+      "id": 36,
+      "name": "New England Suffrage League",
+      "event_count": 8,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 37,
+      "name": "Elks",
+      "event_count": 7,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 38,
+      "name": "Anti-Lynching Crusaders",
+      "event_count": 7,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 39,
+      "name": "National Colored Liberty Congress",
+      "event_count": 7,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 40,
+      "name": "Negro Fellowship League",
+      "event_count": 7,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 41,
+      "name": "Colored Protective League",
+      "event_count": 7,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 42,
+      "name": "Commission on Interracial Cooperation",
+      "event_count": 7,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 43,
+      "name": "Republican National Committee",
+      "event_count": 6,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 44,
+      "name": "Bethel A. M. E. Church",
+      "event_count": 6,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 45,
+      "name": "True Reformers",
+      "event_count": 5,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 46,
+      "name": "American Bar Association",
+      "event_count": 5,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 47,
+      "name": "American Unity League",
+      "event_count": 5,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 48,
+      "name": "Pullman Company",
+      "event_count": 5,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 49,
+      "name": "United Colored Democracy",
+      "event_count": 5,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 50,
+      "name": "American Civil Liberties Union",
+      "event_count": 5,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 51,
+      "name": "Equity Congress",
+      "event_count": 5,
+      "issue_primary": "military"
+    },
+    {
+      "id": 52,
+      "name": "American Negro Labor Congress",
+      "event_count": 5,
+      "issue_primary": "pan_african"
+    },
+    {
+      "id": 53,
+      "name": "Alpha Suffrage Club",
+      "event_count": 5,
+      "issue_primary": "womens_organizing"
+    },
+    {
+      "id": 54,
+      "name": "Federal Council of Churches of Christ in America",
+      "event_count": 5,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 55,
+      "name": "Missouri Negro Republican League Club",
+      "event_count": 4,
+      "issue_primary": "education"
+    },
+    {
+      "id": 56,
+      "name": "Disabled American Veterans of the World War",
+      "event_count": 4,
+      "issue_primary": "military"
+    },
+    {
+      "id": 57,
+      "name": "Empire State Federation of Women's Clubs",
+      "event_count": 4,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 58,
+      "name": "Salvation Army",
+      "event_count": 4,
+      "issue_primary": "military"
+    },
+    {
+      "id": 59,
+      "name": "National Colored Republican Conference",
+      "event_count": 4,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 60,
+      "name": "Alpha Phi Alpha Fraternity",
+      "event_count": 4,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 61,
+      "name": "Lincoln League of America",
+      "event_count": 4,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 62,
+      "name": "League for Democracy",
+      "event_count": 4,
+      "issue_primary": "military"
+    },
+    {
+      "id": 63,
+      "name": "Chicago Urban League",
+      "event_count": 4,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 64,
+      "name": "National Women's Party",
+      "event_count": 4,
+      "issue_primary": "womens_organizing"
+    },
+    {
+      "id": 65,
+      "name": "National Council of Colored Workers",
+      "event_count": 4,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 66,
+      "name": "New York Urban League",
+      "event_count": 4,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 67,
+      "name": "Freedman's Aid Society",
+      "event_count": 3,
+      "issue_primary": "segregation_public"
+    },
+    {
+      "id": 68,
+      "name": "National Association for the Advancement of Women",
+      "event_count": 3,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 69,
+      "name": "British Labour Party",
+      "event_count": 3,
+      "issue_primary": "pan_african"
+    },
+    {
+      "id": 70,
+      "name": "Northwestern Federation of Colored Women's Clubs",
+      "event_count": 3,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 71,
+      "name": "City Federation of Colored Women's Clubs",
+      "event_count": 3,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 72,
+      "name": "Women's Stop Lynching League",
+      "event_count": 3,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 73,
+      "name": "Morgan College",
+      "event_count": 3,
+      "issue_primary": "housing"
+    },
+    {
+      "id": 74,
+      "name": "National Press Association",
+      "event_count": 3,
+      "issue_primary": "government_discrimination"
+    },
+    {
+      "id": 75,
+      "name": "National Colored Democratic League",
+      "event_count": 3,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 76,
+      "name": "Negro Civic League",
+      "event_count": 3,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 77,
+      "name": "African Methodist Episcopal Conference",
+      "event_count": 3,
+      "issue_primary": "government_discrimination"
+    },
+    {
+      "id": 78,
+      "name": "Baptist Ministers Conference",
+      "event_count": 3,
+      "issue_primary": "segregation_public"
+    },
+    {
+      "id": 79,
+      "name": "Federation of Colored Organizations",
+      "event_count": 3,
+      "issue_primary": "military"
+    },
+    {
+      "id": 80,
+      "name": "Colored Methodist Episcopal Church",
+      "event_count": 3,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 81,
+      "name": "Society of Friends",
+      "event_count": 3,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 82,
+      "name": "Brotherhood of Railway Trainmen",
+      "event_count": 3,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 83,
+      "name": "Veterans of Foreign Wars",
+      "event_count": 3,
+      "issue_primary": "military"
+    },
+    {
+      "id": 84,
+      "name": "National Negro Committee",
+      "event_count": 3,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 85,
+      "name": "West End Business Men's Association",
+      "event_count": 3,
+      "issue_primary": "criminal_justice"
+    },
+    {
+      "id": 86,
+      "name": "United Welfare Association",
+      "event_count": 3,
+      "issue_primary": "segregation_public"
+    },
+    {
+      "id": 87,
+      "name": "Ancient Order of Odd Fellows",
+      "event_count": 3,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 88,
+      "name": "Iowa State Afro-American Council",
+      "event_count": 3,
+      "issue_primary": "civil_rights_organizing"
+    },
+    {
+      "id": 89,
+      "name": "Lincoln Independent Party",
+      "event_count": 3,
+      "issue_primary": "voting_rights"
+    },
+    {
+      "id": 90,
+      "name": "United Civic League",
+      "event_count": 3,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 91,
+      "name": "United Mine Workers",
+      "event_count": 3,
+      "issue_primary": "labor"
+    },
+    {
+      "id": 92,
+      "name": "Lincoln Day Club",
+      "event_count": 3,
+      "issue_primary": "anti_lynching"
+    },
+    {
+      "id": 93,
+      "name": "Cleveland Association of Colored Men",
+      "event_count": 3,
+      "issue_primary": "segregation_public"
+    }
+  ],
+  "edges": [
+    {
+      "source": 1,
+      "target": 2,
+      "weight": 22
+    },
+    {
+      "source": 2,
+      "target": 9,
+      "weight": 10
+    },
+    {
+      "source": 11,
+      "target": 1,
+      "weight": 8
+    },
+    {
+      "source": 1,
+      "target": 7,
+      "weight": 8
+    },
+    {
+      "source": 34,
+      "target": 1,
+      "weight": 5
+    },
+    {
+      "source": 1,
+      "target": 9,
+      "weight": 5
+    },
+    {
+      "source": 34,
+      "target": 2,
+      "weight": 4
+    },
+    {
+      "source": 38,
+      "target": 1,
+      "weight": 4
+    },
+    {
+      "source": 12,
+      "target": 1,
+      "weight": 4
+    },
+    {
+      "source": 1,
+      "target": 10,
+      "weight": 4
+    },
+    {
+      "source": 12,
+      "target": 8,
+      "weight": 4
+    },
+    {
+      "source": 13,
+      "target": 1,
+      "weight": 4
+    },
+    {
+      "source": 8,
+      "target": 48,
+      "weight": 3
+    },
+    {
+      "source": 25,
+      "target": 1,
+      "weight": 3
+    },
+    {
+      "source": 34,
+      "target": 9,
+      "weight": 3
+    },
+    {
+      "source": 32,
+      "target": 4,
+      "weight": 3
+    },
+    {
+      "source": 23,
+      "target": 1,
+      "weight": 3
+    },
+    {
+      "source": 11,
+      "target": 13,
+      "weight": 3
+    },
+    {
+      "source": 33,
+      "target": 1,
+      "weight": 3
+    },
+    {
+      "source": 50,
+      "target": 1,
+      "weight": 3
+    },
+    {
+      "source": 4,
+      "target": 9,
+      "weight": 2
+    },
+    {
+      "source": 67,
+      "target": 25,
+      "weight": 2
+    },
+    {
+      "source": 69,
+      "target": 1,
+      "weight": 2
+    },
+    {
+      "source": 55,
+      "target": 1,
+      "weight": 2
+    },
+    {
+      "source": 1,
+      "target": 22,
+      "weight": 2
+    },
+    {
+      "source": 6,
+      "target": 1,
+      "weight": 2
+    },
+    {
+      "source": 44,
+      "target": 72,
+      "weight": 2
+    },
+    {
+      "source": 5,
+      "target": 14,
+      "weight": 2
+    },
+    {
+      "source": 1,
+      "target": 27,
+      "weight": 2
+    },
+    {
+      "source": 58,
+      "target": 15,
+      "weight": 2
+    },
+    {
+      "source": 39,
+      "target": 2,
+      "weight": 2
+    },
+    {
+      "source": 69,
+      "target": 27,
+      "weight": 2
+    },
+    {
+      "source": 60,
+      "target": 1,
+      "weight": 2
+    },
+    {
+      "source": 1,
+      "target": 3,
+      "weight": 2
+    },
+    {
+      "source": 32,
+      "target": 80,
+      "weight": 2
+    },
+    {
+      "source": 4,
+      "target": 80,
+      "weight": 2
+    },
+    {
+      "source": 1,
+      "target": 81,
+      "weight": 2
+    },
+    {
+      "source": 8,
+      "target": 1,
+      "weight": 2
+    },
+    {
+      "source": 11,
+      "target": 2,
+      "weight": 2
+    },
+    {
+      "source": 30,
+      "target": 16,
+      "weight": 2
+    },
+    {
+      "source": 6,
+      "target": 3,
+      "weight": 2
+    },
+    {
+      "source": 21,
+      "target": 1,
+      "weight": 2
+    },
+    {
+      "source": 1,
+      "target": 24,
+      "weight": 2
+    },
+    {
+      "source": 21,
+      "target": 19,
+      "weight": 2
+    },
+    {
+      "source": 1,
+      "target": 64,
+      "weight": 2
+    },
+    {
+      "source": 57,
+      "target": 1,
+      "weight": 2
+    }
+  ]
+}

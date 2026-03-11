@@ -1,0 +1,214 @@
+{
+  "total_events": 7623,
+  "total_campaigns": 757,
+  "total_newspapers": 37,
+  "date_range": [
+    "1905-01-07",
+    "1929-12-28"
+  ],
+  "issue_counts": {
+    "pan_african": 254,
+    "anti_lynching": 1034,
+    "education": 552,
+    "civil_rights_organizing": 834,
+    "military": 472,
+    "labor": 549,
+    "government_discrimination": 522,
+    "migration": 33,
+    "voting_rights": 1093,
+    "cultural_media": 364,
+    "segregation_public": 985,
+    "criminal_justice": 391,
+    "healthcare": 87,
+    "womens_organizing": 78,
+    "housing": 222
+  },
+  "newspaper_list": [
+    {
+      "slug": "amsterdam-news",
+      "name": "Amsterdam News",
+      "location": "New York, NY"
+    },
+    {
+      "slug": "athens-republique",
+      "name": "Athens Republique",
+      "location": "Athens, GA"
+    },
+    {
+      "slug": "baltimore-afro-american",
+      "name": "Baltimore Afro American",
+      "location": "Baltimore, MD"
+    },
+    {
+      "slug": "broad-ax",
+      "name": "Broad Ax",
+      "location": "Chicago, IL"
+    },
+    {
+      "slug": "chicago-defender",
+      "name": "Chicago Defender",
+      "location": "Chicago, IL"
+    },
+    {
+      "slug": "chicago-whip",
+      "name": "Chicago Whip",
+      "location": "Chicago, IL"
+    },
+    {
+      "slug": "cleveland-gazette",
+      "name": "Cleveland Gazette",
+      "location": "Cleveland, OH"
+    },
+    {
+      "slug": "colorado-statesman",
+      "name": "Colorado Statesman",
+      "location": "Denver, CO"
+    },
+    {
+      "slug": "dallas-express",
+      "name": "Dallas Express",
+      "location": "Dallas, TX"
+    },
+    {
+      "slug": "denver-star",
+      "name": "Denver Star",
+      "location": "Denver, CO"
+    },
+    {
+      "slug": "houston-informer",
+      "name": "Houston Informer",
+      "location": "Houston, TX"
+    },
+    {
+      "slug": "indianapolis-freeman",
+      "name": "Indianapolis Freeman",
+      "location": "Indianapolis, IN"
+    },
+    {
+      "slug": "iowa-bystander",
+      "name": "Iowa Bystander",
+      "location": "Des Moines, IA"
+    },
+    {
+      "slug": "kansas-city-advocate",
+      "name": "Kansas City Advocate",
+      "location": "Kansas City, MO"
+    },
+    {
+      "slug": "kansas-city-sun",
+      "name": "Kansas City Sun",
+      "location": "Kansas City, MO"
+    },
+    {
+      "slug": "metropolis-weekly-gazette",
+      "name": "Metropolis Weekly Gazette",
+      "location": "Metropolis, IL"
+    },
+    {
+      "slug": "montana-plaindealer",
+      "name": "Montana Plaindealer",
+      "location": "Helena, MT"
+    },
+    {
+      "slug": "muskogee-cimeter",
+      "name": "Muskogee Cimeter",
+      "location": "Muskogee, OK"
+    },
+    {
+      "slug": "nashville-globe",
+      "name": "Nashville Globe",
+      "location": "Nashville, TN"
+    },
+    {
+      "slug": "negro-world",
+      "name": "Negro World",
+      "location": "New York, NY"
+    },
+    {
+      "slug": "new-york-age",
+      "name": "New York Age",
+      "location": "New York, NY"
+    },
+    {
+      "slug": "omaha-monitor",
+      "name": "Omaha Monitor",
+      "location": "Omaha, NE"
+    },
+    {
+      "slug": "phoenix-tribune",
+      "name": "Phoenix Tribune",
+      "location": "Phoenix, AZ"
+    },
+    {
+      "slug": "pittsburgh-courier",
+      "name": "Pittsburgh Courier",
+      "location": "Pittsburgh, PA"
+    },
+    {
+      "slug": "portland-new-age",
+      "name": "Portland New Age",
+      "location": "Portland, OR"
+    },
+    {
+      "slug": "raleigh-independent",
+      "name": "Raleigh Independent",
+      "location": "Raleigh, NC"
+    },
+    {
+      "slug": "richmond-planet",
+      "name": "Richmond Planet",
+      "location": "Richmond, VA"
+    },
+    {
+      "slug": "springfield-forum",
+      "name": "Springfield Forum",
+      "location": "Springfield, IL"
+    },
+    {
+      "slug": "st-louis-argus",
+      "name": "St Louis Argus",
+      "location": "St. Louis, MO"
+    },
+    {
+      "slug": "st-paul-appeal",
+      "name": "St Paul Appeal",
+      "location": "St. Paul, MN"
+    },
+    {
+      "slug": "tulsa-star",
+      "name": "Tulsa Star",
+      "location": "Tulsa, OK"
+    },
+    {
+      "slug": "twin-city-star",
+      "name": "Twin City Star",
+      "location": "Minneapolis, MN"
+    },
+    {
+      "slug": "washington-bee",
+      "name": "Washington Bee",
+      "location": "Washington, DC"
+    },
+    {
+      "slug": "washington-tribune",
+      "name": "Washington Tribune",
+      "location": "Washington, DC"
+    },
+    {
+      "slug": "western-outlook",
+      "name": "Western Outlook",
+      "location": "Oakland, CA"
+    },
+    {
+      "slug": "wichita-searchlight",
+      "name": "Wichita Searchlight",
+      "location": "Wichita, KS"
+    },
+    {
+      "slug": "wisconsin-weekly-blade",
+      "name": "Wisconsin Weekly Blade",
+      "location": "Milwaukee, WI"
+    }
+  ],
+  "total_organizations": 2096
+}

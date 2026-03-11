@@ -15,7 +15,7 @@ from datetime import datetime
 
 from openai import OpenAI
 
-from config import CLASSIFIER_MODEL, OPENROUTER_BASE_URL
+from config import CLASSIFIER_MODEL, REVIEWER_MODEL, OPENROUTER_BASE_URL
 from db import get_connection, init_db
 
 
@@ -48,8 +48,8 @@ Respond ONLY with the JSON object."""
 
         try:
             resp = client.chat.completions.create(
-                model=CLASSIFIER_MODEL,
-                max_tokens=4000,
+                model=REVIEWER_MODEL,
+                max_tokens=16000,
                 messages=[{"role": "user", "content": prompt}],
             )
             content = resp.choices[0].message.content.strip()

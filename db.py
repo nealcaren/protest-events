@@ -128,6 +128,16 @@ def init_db(conn: sqlite3.Connection) -> None:
             PRIMARY KEY (event_id, campaign_id)
         );
 
+        -- Organization name normalization
+        CREATE TABLE IF NOT EXISTS org_normalizations (
+            original_name TEXT PRIMARY KEY,
+            canonical_name TEXT,
+            excluded INTEGER DEFAULT 0
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_org_norm_canonical
+            ON org_normalizations(canonical_name);
+
         CREATE INDEX IF NOT EXISTS idx_event_sources_event ON event_sources(event_id);
         CREATE INDEX IF NOT EXISTS idx_event_sources_chunk ON event_sources(chunk_id);
         CREATE INDEX IF NOT EXISTS idx_dedup_groups_canonical ON dedup_groups(canonical_event_id);

@@ -127,6 +127,7 @@ SEED_QUERIES = [
 
 # Classification (via OpenRouter)
 CLASSIFIER_MODEL = "qwen/qwen3-235b-a22b-2507"
+REVIEWER_MODEL = "anthropic/claude-opus-4"  # for high-stakes review steps
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 SITE_BASE_URL = "https://dangerouspress.org"
