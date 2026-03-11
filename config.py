@@ -14,7 +14,7 @@ REPORT_FILE = DATA_DIR / "events.html"
 EMBEDDING_MODEL = "nomic-ai/nomic-embed-text-v1.5"
 
 # Search config
-SIMILARITY_THRESHOLD = 0.65
+SIMILARITY_THRESHOLD = 0.70
 MAX_CANDIDATES_PER_QUERY = 200
 
 # Seed queries — organized by event type, using period-authentic newspaper language.
