@@ -62,7 +62,7 @@ def classify_candidates(conn, candidate_rows: list[dict],
 
             if result and result.get("is_protest"):
                 primary_id = group["chunk_ids"][0]
-                conn.execute(
+                cursor = conn.execute(
                     """INSERT INTO events
                        (chunk_id, similarity, matched_query, event_type, description,
                         location, participants, date_mentioned, source_text)
@@ -72,6 +72,12 @@ def classify_candidates(conn, candidate_rows: list[dict],
                      result.get("location"), result.get("participants"),
                      result.get("date_mentioned"), str(group["text"])[:3000]),
                 )
+                event_id = cursor.lastrowid
+                for cid in group["chunk_ids"]:
+                    conn.execute(
+                        "INSERT OR IGNORE INTO event_sources (event_id, chunk_id, role) VALUES (?, ?, 'primary')",
+                        (event_id, cid),
+                    )
                 new_events += 1
 
             for cid in group["chunk_ids"]:

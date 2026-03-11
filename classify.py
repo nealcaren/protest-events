@@ -236,7 +236,7 @@ def main():
             elif result.get("is_protest"):
                 # Record event against the first chunk_id
                 primary_id = group["chunk_ids"][0]
-                conn.execute(
+                cursor = conn.execute(
                     """INSERT INTO events
                        (chunk_id, similarity, matched_query, event_type, description,
                         location, participants, date_mentioned, source_text)
@@ -246,6 +246,12 @@ def main():
                      result.get("location"), result.get("participants"),
                      result.get("date_mentioned"), str(group["text"])[:3000]),
                 )
+                event_id = cursor.lastrowid
+                for cid in group["chunk_ids"]:
+                    conn.execute(
+                        "INSERT OR IGNORE INTO event_sources (event_id, chunk_id, role) VALUES (?, ?, 'primary')",
+                        (event_id, cid),
+                    )
                 yes_count += 1
 
             # Mark ALL chunks in group as classified
