@@ -162,26 +162,6 @@ def find_pairs(conn, threshold: float = 0.80, date_window: int = 30):
         if start > 0 and start % 1000 == 0:
             print(f"  Processed {start}/{len(events)} events, {pairs_found} pairs found")
 
-    # Also add pairs with matching campaign names
-    campaign_pairs = conn.execute("""
-        SELECT DISTINCT ed1.event_id, ed2.event_id
-        FROM event_details ed1
-        JOIN event_details ed2 ON ed1.campaign_name = ed2.campaign_name
-            AND ed1.event_id < ed2.event_id
-            AND ed1.campaign_name IS NOT NULL
-            AND ed1.campaign_name != ''
-        LEFT JOIN dedup_pairs dp ON dp.event_id_a = ed1.event_id
-            AND dp.event_id_b = ed2.event_id
-        WHERE dp.id IS NULL
-    """).fetchall()
-
-    for row in campaign_pairs:
-        conn.execute(
-            "INSERT INTO dedup_pairs (event_id_a, event_id_b, similarity) VALUES (?, ?, ?)",
-            (row[0], row[1], 0.0),
-        )
-        pairs_found += 1
-
     conn.commit()
     print(f"Found {pairs_found} candidate pairs")
     return pairs_found
@@ -349,8 +329,8 @@ def main():
     parser.add_argument("--adjudicate", action="store_true", help="Only adjudicate pairs")
     parser.add_argument("--build-groups", action="store_true", help="Only build groups")
     parser.add_argument("--threshold", type=float, default=0.80,
-                        help="Similarity threshold for candidate pairs")
-    parser.add_argument("--date-window", type=int, default=30,
+                        help="Similarity threshold for candidate pairs (0.80 captures ~1300 true dupes at ~29%% precision, LLM adjudicates)")
+    parser.add_argument("--date-window", type=int, default=15,
                         help="Date window in days for candidate pairs")
     parser.add_argument("--workers", type=int, default=10,
                         help="Number of parallel API calls")
