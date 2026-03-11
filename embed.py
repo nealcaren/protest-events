@@ -1,28 +1,33 @@
-"""Stage 1: Extract text from OCR JSONs, chunk by page, and create embeddings via OpenAI API."""
+"""Stage 1: Extract text from OCR JSONs, chunk by page, and create embeddings."""
 
 import json
-import csv
 import time
 import random
 import argparse
 from pathlib import Path
-from collections import defaultdict
 
 import numpy as np
-import openai
+from sentence_transformers import SentenceTransformer
+from chonkie import TokenChunker
 
-from config import OCR_DIR, DATA_DIR, EMBEDDINGS_FILE, METADATA_FILE, EMBEDDING_MODEL
+from config import OCR_DIR, DATA_DIR, EMBEDDINGS_FILE, EMBEDDING_MODEL
+from db import get_connection, init_db
 
 SHARDS_DIR = DATA_DIR / "shards"
 
-# Chunking config
-TARGET_CHUNKS_PER_PAGE = 8
-OVERLAP_FRACTION = 0.5  # 50% overlap between consecutive chunks
+# Chunking config — sized for nomic-embed-text-v1.5 (2048 token context)
+CHUNK_SIZE = 512       # tokens per chunk
+CHUNK_OVERLAP = 64     # token overlap between consecutive chunks
+
+
+def get_chunker() -> TokenChunker:
+    """Create a token chunker sized for the embedding model."""
+    return TokenChunker(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
 
 
 def extract_page_texts(ocr_dir: Path, max_files: int = 0) -> list[dict]:
     """Extract text from OCR JSONs, concatenate by page in reading order,
-    then split into overlapping chunks."""
+    then split into token-aware chunks via chonkie."""
     json_files = sorted(ocr_dir.rglob("*.json"))
     print(f"Found {len(json_files)} JSON files")
 
@@ -31,6 +36,7 @@ def extract_page_texts(ocr_dir: Path, max_files: int = 0) -> list[dict]:
         json_files = json_files[:max_files]
         print(f"Sampling {max_files} files")
 
+    chunker = get_chunker()
     chunks = []
 
     for jf in json_files:
@@ -69,11 +75,11 @@ def extract_page_texts(ocr_dir: Path, max_files: int = 0) -> list[dict]:
         # Concatenate all regions into full page text
         full_text = "\n\n".join(region_texts)
 
-        # Split into overlapping chunks
-        page_chunks = make_chunks(full_text, TARGET_CHUNKS_PER_PAGE, OVERLAP_FRACTION)
+        # Token-aware chunking via chonkie
+        page_chunks = chunker.chunk(full_text)
 
-        for i, chunk_text in enumerate(page_chunks):
-            if len(chunk_text.strip()) < 20:
+        for i, chunk in enumerate(page_chunks):
+            if len(chunk.text.strip()) < 20:
                 continue
             chunks.append({
                 "paper": paper,
@@ -81,80 +87,44 @@ def extract_page_texts(ocr_dir: Path, max_files: int = 0) -> list[dict]:
                 "page": page_num,
                 "chunk_idx": i,
                 "n_chunks": len(page_chunks),
-                "text": chunk_text,
+                "text": chunk.text,
             })
 
     return chunks
 
 
-def make_chunks(text: str, target_chunks: int, overlap: float) -> list[str]:
-    """Split text into approximately target_chunks overlapping chunks.
-
-    Uses paragraph boundaries where possible for cleaner splits.
-    """
-    paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
-
-    if len(paragraphs) <= 1:
-        # Too short to chunk meaningfully
-        return [text]
-
-    # If fewer paragraphs than target chunks, each paragraph is a chunk
-    # with overlap by including neighbor paragraphs
-    if len(paragraphs) <= target_chunks:
-        chunks = []
-        for i in range(len(paragraphs)):
-            # Include previous paragraph for context (overlap)
-            start = max(0, i - 1)
-            chunk = "\n\n".join(paragraphs[start:i + 1])
-            chunks.append(chunk)
-        return chunks
-
-    # More paragraphs than target chunks: group paragraphs into windows
-    step = max(1, len(paragraphs) // target_chunks)
-    window = max(step, int(step / (1 - overlap))) if overlap < 1 else step
-
-    chunks = []
-    i = 0
-    while i < len(paragraphs):
-        end = min(i + window, len(paragraphs))
-        chunk = "\n\n".join(paragraphs[i:end])
-        chunks.append(chunk)
-        i += step
-        if end == len(paragraphs):
-            break
-
-    return chunks
+def load_model(model_name: str = EMBEDDING_MODEL) -> SentenceTransformer:
+    """Load the embedding model."""
+    return SentenceTransformer(model_name, trust_remote_code=True)
 
 
-MAX_TOKENS_PER_REQUEST = 250_000  # stay under OpenAI's 300K limit
+def embed_texts(model: SentenceTransformer, texts: list[str], prefix: str = "search_document: ",
+                batch_size: int = 32) -> np.ndarray:
+    """Embed texts using sentence-transformers with task prefix."""
+    prefixed = [prefix + t for t in texts]
+    return model.encode(prefixed, show_progress_bar=True, batch_size=batch_size,
+                        normalize_embeddings=True)
 
 
-def estimate_tokens(text: str) -> int:
-    """Rough token estimate: ~4 chars per token."""
-    return len(text) // 4
-
-
-def embed_texts(client: openai.OpenAI, texts: list[str], model: str) -> np.ndarray:
-    """Embed texts, automatically splitting into sub-batches to stay under token limits."""
-    all_embeddings = []
-    batch = []
-    batch_tokens = 0
-
-    for text in texts:
-        t = estimate_tokens(text)
-        if batch and batch_tokens + t > MAX_TOKENS_PER_REQUEST:
-            resp = client.embeddings.create(input=batch, model=model)
-            all_embeddings.extend([d.embedding for d in resp.data])
-            batch = []
-            batch_tokens = 0
-        batch.append(text)
-        batch_tokens += t
-
-    if batch:
-        resp = client.embeddings.create(input=batch, model=model)
-        all_embeddings.extend([d.embedding for d in resp.data])
-
-    return np.array(all_embeddings, dtype=np.float32)
+def save_chunks_to_db(conn, chunks: list[dict]) -> list[int]:
+    """Insert chunks into the database, returning their row IDs in order.
+    Skips duplicates via INSERT OR IGNORE."""
+    cursor = conn.cursor()
+    ids = []
+    for c in chunks:
+        cursor.execute(
+            """INSERT OR IGNORE INTO chunks (paper, date, page, chunk_idx, n_chunks, text)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (c["paper"], c["date"], c["page"], c["chunk_idx"], c["n_chunks"], c["text"]),
+        )
+        # Fetch the id whether we just inserted or it already existed
+        cursor.execute(
+            "SELECT id FROM chunks WHERE paper=? AND date=? AND page=? AND chunk_idx=?",
+            (c["paper"], c["date"], c["page"], c["chunk_idx"]),
+        )
+        ids.append(cursor.fetchone()[0])
+    conn.commit()
+    return ids
 
 
 def main():
@@ -162,7 +132,7 @@ def main():
     parser.add_argument("--max-files", type=int, default=0,
                         help="Max JSON files to process (0 = all)")
     parser.add_argument("--batch-size", type=int, default=1000,
-                        help="Texts per API call")
+                        help="Chunks per embedding batch")
     args = parser.parse_args()
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -178,12 +148,13 @@ def main():
         print("No chunks created. Check OCR_DIR in config.py")
         return
 
-    # Save metadata
-    print(f"Saving metadata to {METADATA_FILE}...")
-    with open(METADATA_FILE, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["paper", "date", "page", "chunk_idx", "n_chunks", "text"])
-        writer.writeheader()
-        writer.writerows(chunks)
+    # Save chunks to database
+    conn = get_connection()
+    init_db(conn)
+    print("Saving chunks to database...")
+    chunk_ids = save_chunks_to_db(conn, chunks)
+    print(f"Database has {conn.execute('SELECT COUNT(*) FROM chunks').fetchone()[0]} chunks")
+    conn.close()
 
     # Check existing shards for resume
     existing_shards = sorted(SHARDS_DIR.glob("batch_*.npy"))
@@ -196,17 +167,19 @@ def main():
         if start_batch > 0:
             print(f"Resuming from batch {start_batch} ({start_idx} chunks already done)")
 
-        texts = [c["text"][:8000] for c in chunks]
-        client = openai.OpenAI()
+        texts = [c["text"] for c in chunks]
         total_batches = (len(texts) + args.batch_size - 1) // args.batch_size
 
-        print(f"Embedding {len(texts) - start_idx} remaining chunks with {EMBEDDING_MODEL}...")
+        print(f"Loading model {EMBEDDING_MODEL}...")
+        model = load_model()
+
+        print(f"Embedding {len(texts) - start_idx} remaining chunks...")
         t0 = time.time()
 
         for batch_num in range(start_batch, total_batches):
             i = batch_num * args.batch_size
             batch = texts[i:i + args.batch_size]
-            embs = embed_texts(client, batch, EMBEDDING_MODEL)
+            embs = embed_texts(model, batch)
 
             shard_path = SHARDS_DIR / f"batch_{batch_num:04d}.npy"
             np.save(shard_path, embs)
@@ -220,11 +193,11 @@ def main():
 
         print(f"Embedding done in {time.time()-t0:.1f}s")
 
-    # Combine shards into final file
+    # Combine shards into final file (float16 for compact storage)
     print("Combining shards...")
     all_shards = sorted(SHARDS_DIR.glob("batch_*.npy"))
     embeddings = np.concatenate([np.load(s) for s in all_shards])
-    np.savez_compressed(EMBEDDINGS_FILE, embeddings=embeddings)
+    np.save(EMBEDDINGS_FILE, embeddings.astype(np.float16))
     print(f"Saved embeddings to {EMBEDDINGS_FILE} ({EMBEDDINGS_FILE.stat().st_size / 1024 / 1024:.1f} MB)")
     print(f"Total: {len(embeddings)} embeddings, {len(all_shards)} shards")
     print("Done.")

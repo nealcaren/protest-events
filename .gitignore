@@ -1,8 +1,16 @@
 data/shards/
 data/embeddings.npz
+data/embeddings.npy
 data/metadata.csv
 data/candidates.csv
 data/classified_keys.txt
+data/protest_events.db
+data/model_eval_results.json
+data/test_samples*.json
+data/.DS_Store
+ocr-results/
+ocr-results.zip
 .venv/
 __pycache__/
 *.pyc
+.DS_Store

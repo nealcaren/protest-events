@@ -1,14 +1,21 @@
-"""Stage 3: Classify candidates using Claude Haiku."""
+"""Stage 3: Classify candidates using Qwen3 via OpenRouter.
+
+Groups adjacent chunks from the same page before classifying, so the
+model sees full context when an event spans chunk boundaries.
+"""
 
 import json
+import os
+import re
 import time
 import argparse
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import pandas as pd
-import anthropic
+from openai import OpenAI
 
-from config import CANDIDATES_FILE, EVENTS_FILE, HAIKU_MODEL, DATA_DIR
+from config import CLASSIFIER_MODEL, OPENROUTER_BASE_URL, DATA_DIR
+from db import get_connection, init_db
 
 
 SYSTEM_PROMPT = """You are analyzing text from African American newspapers published between 1905 and 1929.
@@ -43,136 +50,226 @@ Respond with a JSON object:
 Respond ONLY with the JSON object, no other text."""
 
 
-def classify_candidate(client: anthropic.Anthropic, row: dict) -> tuple[dict, dict | None]:
-    """Classify a single candidate using Haiku. Returns (row, result)."""
-    text = str(row["text"])[:2000]  # cap input length
+def parse_json_response(content: str) -> dict | None:
+    """Extract JSON from a response that might have markdown fences or thinking tags."""
+    content = content.strip()
+    # Strip <think>...</think> blocks (Qwen/DeepSeek reasoning)
+    if "<think>" in content:
+        content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
+    # Strip markdown fences
+    if content.startswith("```"):
+        lines = content.split("\n")
+        inner = []
+        started = False
+        for line in lines:
+            if line.startswith("```") and not started:
+                started = True
+                continue
+            elif line.startswith("```") and started:
+                break
+            elif started:
+                inner.append(line)
+        content = "\n".join(inner)
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        match = re.search(r'\{[^{}]*"is_protest"[^{}]*\}', content)
+        if match:
+            try:
+                return json.loads(match.group())
+            except json.JSONDecodeError:
+                pass
+        return None
+
+
+def group_adjacent_chunks(rows: list[dict]) -> list[dict]:
+    """Group adjacent candidate chunks from the same page into merged groups.
+
+    Each returned dict has:
+      - chunk_ids: list of chunk_ids in the group
+      - paper, date, page: from the first chunk
+      - text: concatenated text of all chunks in order
+      - similarity: max similarity across chunks
+      - matched_query: query from the highest-similarity chunk
+    """
+    # Index by (paper, date, page)
+    by_page = defaultdict(list)
+    for row in rows:
+        key = (row["paper"], row["date"], row["page"])
+        by_page[key].append(row)
+
+    groups = []
+    for key, page_rows in by_page.items():
+        page_rows.sort(key=lambda r: r["chunk_idx"])
+
+        # Find runs of consecutive chunk_idx values
+        runs = []
+        current_run = [page_rows[0]]
+        for i in range(1, len(page_rows)):
+            if page_rows[i]["chunk_idx"] == current_run[-1]["chunk_idx"] + 1:
+                current_run.append(page_rows[i])
+            else:
+                runs.append(current_run)
+                current_run = [page_rows[i]]
+        runs.append(current_run)
+
+        for run in runs:
+            best = max(run, key=lambda r: r["similarity"])
+            merged_text = "\n\n".join(str(r["text"]) for r in run)
+            groups.append({
+                "chunk_ids": [r["chunk_id"] for r in run],
+                "paper": run[0]["paper"],
+                "date": run[0]["date"],
+                "page": run[0]["page"],
+                "text": merged_text,
+                "similarity": best["similarity"],
+                "matched_query": best["matched_query"],
+                "n_chunks": len(run),
+            })
+
+    return groups
+
+
+def classify_group(client: OpenAI, group: dict) -> tuple[dict, dict | None]:
+    """Classify a merged chunk group. Returns (group, result)."""
+    text = str(group["text"])[:3000]  # slightly larger budget for merged chunks
 
     try:
-        resp = client.messages.create(
-            model=HAIKU_MODEL,
+        resp = client.chat.completions.create(
+            model=CLASSIFIER_MODEL,
             max_tokens=300,
-            system=SYSTEM_PROMPT,
-            messages=[{
-                "role": "user",
-                "content": USER_TEMPLATE.format(
-                    paper=row["paper"], date=row["date"], text=text
-                ),
-            }],
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": USER_TEMPLATE.format(
+                    paper=group["paper"], date=group["date"], text=text
+                )},
+            ],
         )
-        content = resp.content[0].text.strip()
-        # Parse JSON from response
-        if content.startswith("```"):
-            content = content.split("```")[1]
-            if content.startswith("json"):
-                content = content[4:]
-        return row, json.loads(content)
-    except (json.JSONDecodeError, IndexError, anthropic.APIError) as e:
-        return row, None
+        content = resp.choices[0].message.content.strip()
+        return group, parse_json_response(content)
+    except Exception:
+        return group, None
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=0,
-                        help="Max candidates to classify (0 = all)")
+                        help="Max groups to classify (0 = all)")
     parser.add_argument("--workers", type=int, default=10,
                         help="Number of parallel API calls")
     parser.add_argument("--dry-run", action="store_true",
                         help="Show what would be classified without calling API")
     args = parser.parse_args()
 
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-    candidates = pd.read_csv(CANDIDATES_FILE)
-    print(f"Loaded {len(candidates)} candidates")
-
-    if args.limit > 0:
-        candidates = candidates.head(args.limit)
-        print(f"Limited to {len(candidates)} candidates")
-
-    if args.dry_run:
-        for _, row in candidates.head(10).iterrows():
-            text_preview = str(row["text"])[:100].replace("\n", " ")
-            print(f"  {row['paper']} {row['date']} p{row['page']} [{row['similarity']:.3f}]")
-            print(f"    {text_preview}")
-            print()
-        print(f"Would classify {len(candidates)} candidates")
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    if not api_key:
+        print("ERROR: Set OPENROUTER_API_KEY environment variable")
         return
 
-    # Track already-processed candidates for resume support
-    processed_file = DATA_DIR / "classified_keys.txt"
-    processed_keys = set()
-    if processed_file.exists():
-        processed_keys = set(processed_file.read_text().splitlines())
-        print(f"Resuming: {len(processed_keys)} already processed")
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Load existing events if resuming
-    events = []
-    if EVENTS_FILE.exists() and processed_keys:
-        events = pd.read_csv(EVENTS_FILE).to_dict("records")
-        print(f"Loaded {len(events)} existing events")
+    conn = get_connection()
+    init_db(conn)
 
-    # Filter to unprocessed candidates
-    to_process = []
-    for _, row in candidates.iterrows():
-        key = f"{row['paper']}|{row['date']}|{row['page']}|{row['chunk_idx']}"
-        if key not in processed_keys:
-            to_process.append(row.to_dict())
+    # Load unclassified candidates
+    rows = conn.execute("""
+        SELECT c.id as chunk_id, c.paper, c.date, c.page, c.chunk_idx, c.text,
+               cand.similarity, cand.matched_query
+        FROM candidates cand
+        JOIN chunks c ON c.id = cand.chunk_id
+        LEFT JOIN classified cl ON cl.chunk_id = cand.chunk_id
+        WHERE cl.chunk_id IS NULL
+        ORDER BY cand.similarity DESC
+    """).fetchall()
 
-    print(f"Processing {len(to_process)} candidates with {args.workers} workers...")
+    to_process = [dict(r) for r in rows]
+    total_candidates = conn.execute("SELECT COUNT(*) FROM candidates").fetchone()[0]
+    already_done = total_candidates - len(to_process)
 
-    client = anthropic.Anthropic()
+    print(f"Total candidates: {total_candidates}")
+    if already_done > 0:
+        print(f"Already classified: {already_done}")
+    print(f"Unclassified chunks: {len(to_process)}")
+
+    # Group adjacent chunks
+    groups = group_adjacent_chunks(to_process)
+    solo = sum(1 for g in groups if g["n_chunks"] == 1)
+    merged = len(groups) - solo
+    print(f"Grouped into {len(groups)} classification units "
+          f"({solo} solo + {merged} merged from {len(to_process) - solo} chunks)")
+
+    if args.limit > 0:
+        groups = groups[:args.limit]
+        print(f"Limited to {len(groups)} groups")
+
+    if args.dry_run:
+        for group in groups[:10]:
+            text_preview = str(group["text"])[:100].replace("\n", " ")
+            print(f"  {group['paper']} {group['date']} p{group['page']} "
+                  f"[{group['similarity']:.3f}] {group['n_chunks']} chunks")
+            print(f"    {text_preview}")
+            print()
+        print(f"Would classify {len(groups)} groups ({sum(g['n_chunks'] for g in groups)} chunks)")
+        conn.close()
+        return
+
+    existing_events = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+
+    client = OpenAI(base_url=OPENROUTER_BASE_URL, api_key=api_key)
     t0 = time.time()
     done = 0
     yes_count = 0
+    parse_errors = 0
 
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         futures = {
-            executor.submit(classify_candidate, client, row): row
-            for row in to_process
+            executor.submit(classify_group, client, group): group
+            for group in groups
         }
 
         for future in as_completed(futures):
-            row, result = future.result()
-            key = f"{row['paper']}|{row['date']}|{row['page']}|{row['chunk_idx']}"
+            group, result = future.result()
             done += 1
 
-            if result and result.get("is_protest"):
-                event = {
-                    "paper": row["paper"],
-                    "date": row["date"],
-                    "page": row["page"],
-                    "chunk_idx": row["chunk_idx"],
-                    "similarity": round(row["similarity"], 3),
-                    "matched_query": row["matched_query"],
-                    "event_type": result.get("event_type"),
-                    "description": result.get("description"),
-                    "location": result.get("location"),
-                    "participants": result.get("participants"),
-                    "date_mentioned": result.get("date_mentioned"),
-                    "source_text": str(row["text"])[:2000],
-                }
-                events.append(event)
+            if result is None:
+                parse_errors += 1
+            elif result.get("is_protest"):
+                # Record event against the first chunk_id
+                primary_id = group["chunk_ids"][0]
+                conn.execute(
+                    """INSERT INTO events
+                       (chunk_id, similarity, matched_query, event_type, description,
+                        location, participants, date_mentioned, source_text)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (primary_id, round(group["similarity"], 3), group["matched_query"],
+                     result.get("event_type"), result.get("description"),
+                     result.get("location"), result.get("participants"),
+                     result.get("date_mentioned"), str(group["text"])[:3000]),
+                )
                 yes_count += 1
 
-            processed_keys.add(key)
+            # Mark ALL chunks in group as classified
+            for cid in group["chunk_ids"]:
+                conn.execute("INSERT OR IGNORE INTO classified (chunk_id) VALUES (?)", (cid,))
 
-            # Progress update every 50
+            # Checkpoint every 50
             if done % 50 == 0:
+                conn.commit()
                 elapsed = time.time() - t0
                 rate = done / elapsed
-                eta = (len(to_process) - done) / rate if rate > 0 else 0
-                print(f"  [{done}/{len(to_process)}] {yes_count} events found | {rate:.1f}/s | ETA {eta:.0f}s")
-                pd.DataFrame(events).to_csv(EVENTS_FILE, index=False)
-                processed_file.write_text("\n".join(processed_keys))
+                eta = (len(groups) - done) / rate if rate > 0 else 0
+                print(f"  [{done}/{len(groups)}] {yes_count} events | "
+                      f"{parse_errors} errors | {rate:.1f}/s | ETA {eta:.0f}s")
+
+    conn.commit()
+    total_events = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+    conn.close()
 
     elapsed = time.time() - t0
-    print(f"\nClassified {done} candidates in {elapsed:.0f}s ({done/elapsed:.1f}/s)")
-    print(f"Found {yes_count} new + {len(events)-yes_count} existing = {len(events)} total events")
-
-    if events:
-        pd.DataFrame(events).to_csv(EVENTS_FILE, index=False)
-        processed_file.write_text("\n".join(processed_keys))
-        print(f"Saved to {EVENTS_FILE}")
+    print(f"\nClassified {done} groups in {elapsed:.0f}s ({done/elapsed:.1f}/s)")
+    print(f"Found {yes_count} new + {existing_events} existing = {total_events} total events")
+    if parse_errors:
+        print(f"Parse errors: {parse_errors}")
 
 
 if __name__ == "__main__":

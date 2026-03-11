@@ -1,11 +1,12 @@
-"""Stage 4: Generate HTML report from events CSV."""
+"""Stage 4: Generate HTML report from events database."""
 
 import argparse
 from html import escape
 
 import pandas as pd
 
-from config import EVENTS_FILE, REPORT_FILE, SITE_BASE_URL, DATA_DIR
+from config import REPORT_FILE, SITE_BASE_URL, DATA_DIR
+from db import get_connection, init_db
 
 
 def make_viewer_url(paper: str, date: str, page: int) -> str:
@@ -13,9 +14,25 @@ def make_viewer_url(paper: str, date: str, page: int) -> str:
     return f"{SITE_BASE_URL}/?paper={paper}&date={date}&page={page}"
 
 
+def load_events(conn) -> pd.DataFrame:
+    """Load events joined with chunk metadata."""
+    rows = conn.execute("""
+        SELECT c.paper, c.date, c.page, c.chunk_idx,
+               e.similarity, e.matched_query, e.event_type, e.description,
+               e.location, e.participants, e.date_mentioned, e.source_text
+        FROM events e
+        JOIN chunks c ON c.id = e.chunk_id
+        ORDER BY c.date, c.paper
+    """).fetchall()
+    return pd.DataFrame(rows, columns=[
+        "paper", "date", "page", "chunk_idx", "similarity", "matched_query",
+        "event_type", "description", "location", "participants",
+        "date_mentioned", "source_text",
+    ])
+
+
 def generate_html(events: pd.DataFrame) -> str:
     """Generate an HTML report from events dataframe."""
-    # Group and sort
     events = events.sort_values(["date", "paper"])
 
     event_types = sorted(events["event_type"].dropna().unique())
@@ -289,7 +306,11 @@ def generate_html(events: pd.DataFrame) -> str:
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    events = pd.read_csv(EVENTS_FILE)
+    conn = get_connection()
+    init_db(conn)
+    events = load_events(conn)
+    conn.close()
+
     print(f"Loaded {len(events)} events")
 
     html = generate_html(events)

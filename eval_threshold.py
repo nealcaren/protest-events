@@ -1,18 +1,21 @@
-"""Evaluate similarity thresholds by sampling candidates and asking Claude to judge relevance."""
+"""Evaluate similarity thresholds by sampling candidates and asking Qwen3 to judge relevance."""
 
 import json
+import os
+import re
 import time
 import argparse
 
 import numpy as np
 import pandas as pd
-import openai
-import anthropic
+from openai import OpenAI
 
 from config import (
-    EMBEDDINGS_FILE, METADATA_FILE, EMBEDDING_MODEL,
-    SEED_QUERIES, HAIKU_MODEL, DATA_DIR,
+    EMBEDDINGS_FILE, EMBEDDING_MODEL,
+    SEED_QUERIES, CLASSIFIER_MODEL, OPENROUTER_BASE_URL, DATA_DIR,
 )
+from db import get_connection, init_db
+from embed import load_model
 
 EVAL_PROMPT = """You are evaluating whether newspaper text passages are relevant candidates
 for protest event extraction. Rate each passage on whether it MIGHT describe or mention
@@ -29,23 +32,63 @@ Respond with a JSON array of objects: [{{"id": 0, "rating": "YES/MAYBE/NO"}}]
 Respond ONLY with the JSON array."""
 
 
+def parse_json_array(content: str) -> list | None:
+    """Extract JSON array from response that might have thinking tags or fences."""
+    content = content.strip()
+    if "<think>" in content:
+        content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
+    if content.startswith("```"):
+        lines = content.split("\n")
+        inner = []
+        started = False
+        for line in lines:
+            if line.startswith("```") and not started:
+                started = True
+                continue
+            elif line.startswith("```") and started:
+                break
+            elif started:
+                inner.append(line)
+        content = "\n".join(inner)
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        match = re.search(r'\[.*\]', content, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group())
+            except json.JSONDecodeError:
+                pass
+        return None
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--samples", type=int, default=20,
                         help="Samples per threshold band")
     args = parser.parse_args()
 
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    if not api_key:
+        print("ERROR: Set OPENROUTER_API_KEY environment variable")
+        return
+
     print("Loading embeddings and metadata...")
-    embeddings = np.load(EMBEDDINGS_FILE)["embeddings"]
-    meta = pd.read_csv(METADATA_FILE)
+    embeddings = np.load(EMBEDDINGS_FILE, mmap_mode="r").astype(np.float32)
+    conn = get_connection()
+    init_db(conn)
+    rows = conn.execute("SELECT id, paper, date, page, chunk_idx, text FROM chunks ORDER BY id").fetchall()
+    meta = pd.DataFrame(rows, columns=["id", "paper", "date", "page", "chunk_idx", "text"])
+    conn.close()
     print(f"Loaded {len(meta)} chunks")
 
-    oai = openai.OpenAI()
-    ant = anthropic.Anthropic()
+    client = OpenAI(base_url=OPENROUTER_BASE_URL, api_key=api_key)
 
     # Embed queries
-    resp = oai.embeddings.create(input=SEED_QUERIES, model=EMBEDDING_MODEL)
-    q_embs = np.array([d.embedding for d in resp.data], dtype=np.float32)
+    print(f"Loading model {EMBEDDING_MODEL}...")
+    model = load_model()
+    prefixed = ["search_query: " + q for q in SEED_QUERIES]
+    q_embs = model.encode(prefixed, normalize_embeddings=True)
 
     # Compute similarities
     emb_norm = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
@@ -84,22 +127,21 @@ def main():
             text = str(meta.iloc[idx]["text"])[:300].replace("\n", " ")
             passages += f"\n[{j}] {text}\n"
 
-        # Ask Claude to evaluate
         try:
-            resp = ant.messages.create(
-                model=HAIKU_MODEL,
+            resp = client.chat.completions.create(
+                model=CLASSIFIER_MODEL,
                 max_tokens=500,
                 messages=[{
                     "role": "user",
                     "content": EVAL_PROMPT.format(passages=passages),
                 }],
             )
-            content = resp.content[0].text.strip()
-            if content.startswith("```"):
-                content = content.split("```")[1]
-                if content.startswith("json"):
-                    content = content[4:]
-            ratings = json.loads(content)
+            content = resp.choices[0].message.content.strip()
+            ratings = parse_json_array(content)
+
+            if ratings is None:
+                print(f"  [{low:.2f}-{high:.2f}] Parse error")
+                continue
 
             yes = sum(1 for r in ratings if r.get("rating") == "YES")
             maybe = sum(1 for r in ratings if r.get("rating") == "MAYBE")
